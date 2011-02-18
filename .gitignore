@@ -5,3 +5,6 @@
 /secrets.py
 .DS_Store
 ._*
+.project
+.pydevproject
+mettlerd.py
