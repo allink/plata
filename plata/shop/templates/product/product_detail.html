@@ -18,10 +18,14 @@
     {% for currency, prices in object.get_prices %}
         {% if prices.sale %}
             {% if prices.normal %}<span style="text-decoration: line-through;">{{ prices.normal }}</span>{% endif %}
-            <strong>{{ prices.sale }}</strong><br />
+            <strong>{{ prices.sale }}</strong>
         {% else %}
-            <strong>{{ prices.normal }}</strong><br />
+            <strong>{{ prices.normal }}</strong>
         {% endif %}
+		{% if prices.stagger > 1 %}
+			<i>({% trans "If you buy more than " %} {{ prices.stagger }})</i>
+		{% endif %}
+		<br/>
     {% endfor %}
 </div>
 

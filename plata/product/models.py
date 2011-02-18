@@ -184,6 +184,7 @@ class Product(models.Model):
             prices.append((currency, {
                 'normal': normal,
                 'sale': sale,
+                'stagger': normal.stagger,
                 }))
 
         cache.set(key, prices)
@@ -286,6 +287,8 @@ class ProductPrice(models.Model):
         default=plata.settings.PLATA_PRICE_INCLUDES_TAX)
     tax_class = models.ForeignKey(TaxClass, verbose_name=_('tax class'))
 
+    stagger = models.PositiveIntegerField(_('stagger'), default=1,
+        help_text = _('Price applicable when ordering at least x items. Used for stagger pricing.'))
     is_active = models.BooleanField(_('is active'), default=True)
     valid_from = models.DateField(_('valid from'), default=date.today)
     valid_until = models.DateField(_('valid until'), blank=True, null=True)
