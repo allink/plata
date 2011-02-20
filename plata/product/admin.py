@@ -170,14 +170,15 @@ class ReadonlyModelAdmin(admin.ModelAdmin):
 
 # All fields are read only; these models are only used for raw_id_fields support
 admin.site.register(models.ProductPrice,
-    admin_class=ReadonlyModelAdmin,
-#    list_display=('__unicode__', 'product', 'currency', '_unit_price', 'tax_included',
-#        'tax_class', 'is_active', 'valid_from', 'valid_until', 'is_sale'),
+    # mettlerd: make product prices writable
+    # admin_class=ReadonlyModelAdmin,
+    admin_class=admin.ModelAdmin,
     list_display=('__unicode__', 'product', 'currency', '_unit_price', 'tax_included',
         'tax_class', 'stagger', 'is_active', 'valid_from', 'valid_until', 'is_sale'),
     list_filter=('is_active', 'is_sale', 'tax_included', 'tax_class', 'currency'),
-    readonly_fields=('product', 'currency', '_unit_price', 'tax_included', 'tax_class',
-        'is_active', 'valid_from', 'valid_until', 'is_sale'),
+    # mettlerd: make product prices writable
+    # readonly_fields=('product', 'currency', '_unit_price', 'tax_included', 'tax_class',
+    # 'is_active', 'valid_from', 'valid_until', 'is_sale'),
     search_fields=('product__name', 'product__description', '_unit_price'),
     can_delete=False,
     )
