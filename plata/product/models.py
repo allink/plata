@@ -10,6 +10,7 @@ from plata.compat import product as itertools_product
 from plata.fields import CurrencyField
 
 
+
 class TaxClass(models.Model):
     name = models.CharField(_('name'), max_length=100)
     rate = models.DecimalField(_('rate'), max_digits=10, decimal_places=2)
@@ -155,37 +156,100 @@ class Product(models.Model):
                 self._main_image = None
         return self._main_image
 
-    def get_price(self, currency=None, **kwargs):
+#    def get_price(self, currency=None, **kwargs):
+#        # mettlerd: TODO we'll probably have to make this stagger-ready
+#        kwargs['currency'] = currency or plata.shop_instance().default_currency()
+#        return self.prices.active().filter(**kwargs).latest()
+    
+    def get_price(self, currency=None, quantity=1, **kwargs):
+        # mettlerd: TODO we currently ignore further arguments, i.e. **kwargs
+        # mettlerd: This function isn't optimized for performance yet
         kwargs['currency'] = currency or plata.shop_instance().default_currency()
-        return self.prices.active().filter(**kwargs).latest()
+        stagger_prices = self.get_prices()
+        # assumption: stagger_prices is sorted in reverse numeric order
+        for my_currency, my_staggered_price in stagger_prices:
+#            print my_currency
+#            print my_staggered_price['stagger']
+#            print my_staggered_price['sale']
+            if (my_currency == currency) and (quantity >= my_staggered_price['stagger']):
+#                print "same currency and quantity >= my_staggered_price"
+                # assume the sales price is lower than the normal price
+                if my_staggered_price['sale']:
+                    return my_staggered_price['sale']
+                else:
+                    if my_staggered_price['normal']:
+                        return my_staggered_price['normal']
+                    else:
+                        raise "Strange error: Both the sales and normal price are None"
 
+#    def get_prices(self):
+#        from django.core.cache import cache
+#        key = 'product-prices-%s' % self.pk
+#
+#        if cache.has_key(key):
+#            return cache.get(key)
+#
+#        prices = []
+#        for currency in plata.settings.CURRENCIES:
+#            try:
+#                normal, sale = self.prices.active().filter(currency=currency).latest(), None
+#            except self.prices.model.DoesNotExist:
+#                continue
+#            
+#            if normal.is_sale:
+#                sale = normal
+#                try:
+#                    normal = self.prices.active().filter(is_sale=False, currency=currency).latest()
+#                except self.prices.model.DoesNotExist:
+#                    normal = None
+#
+#            prices.append((currency, {
+#                'normal': normal,
+#                'sale': sale,
+#                'stagger': normal.stagger,
+#                }))
+#
+#        cache.set(key, prices)
+#        return prices
+    
     def get_prices(self):
         from django.core.cache import cache
-
         key = 'product-prices-%s' % self.pk
-
         if cache.has_key(key):
             return cache.get(key)
 
         prices = []
         for currency in plata.settings.CURRENCIES:
             try:
-                normal, sale = self.prices.active().filter(currency=currency).latest(), None
+                # return all active prices (including stagger prices) for this product and currency
+                normal = self.prices.active().filter(currency=currency)
             except self.prices.model.DoesNotExist:
                 continue
+            
+            # determine the unique stagger categories for this product on-the-fly
+            stagger_categories = []
+            for temp_price in normal:
+                if not temp_price.stagger in stagger_categories:
+                    stagger_categories.append(temp_price.stagger)
+            stagger_categories.sort(reverse=True)
 
-            if normal.is_sale:
-                sale = normal
+            # get this product's latest normal and sales price for each stagger category we found
+            # and append them to the price list to be returned
+            for current_stagger_category in stagger_categories:
+                normal_price = sales_price = None
                 try:
-                    normal = self.prices.active().filter(is_sale=False, currency=currency).latest()
+                    normal_price = self.prices.active().filter(is_sale=False, currency=currency, stagger=current_stagger_category).latest()
                 except self.prices.model.DoesNotExist:
-                    normal = None
-
-            prices.append((currency, {
-                'normal': normal,
-                'sale': sale,
-                'stagger': normal.stagger,
-                }))
+                    pass
+                try:
+                    sales_price = self.prices.active().filter(is_sale=True, currency=currency, stagger=current_stagger_category).latest()
+                except self.prices.model.DoesNotExist:
+                    pass
+                prices.append((currency, {
+                    'normal': normal_price,
+                    'sale': sales_price,
+                    'stagger': current_stagger_category,
+                    }))
 
         cache.set(key, prices)
         return prices
@@ -286,7 +350,6 @@ class ProductPrice(models.Model):
         help_text=_('Is tax included in given unit price?'),
         default=plata.settings.PLATA_PRICE_INCLUDES_TAX)
     tax_class = models.ForeignKey(TaxClass, verbose_name=_('tax class'))
-
     stagger = models.PositiveIntegerField(_('stagger'), default=1,
         help_text = _('Price applicable when ordering at least x items. Used for stagger pricing.'))
     is_active = models.BooleanField(_('is active'), default=True)

@@ -64,6 +64,7 @@ class Order(BillingShippingAddress):
         max_digits=18, decimal_places=10, blank=True, null=True)
     shipping_discount = models.DecimalField(_('shipping discount'),
         max_digits=18, decimal_places=10, blank=True, null=True)
+    # mettlerd: TODO add shipping categories
     shipping_tax = models.DecimalField(_('shipping tax'),
         max_digits=18, decimal_places=10, default=Decimal('0.00'))
 
@@ -173,13 +174,6 @@ class Order(BillingShippingAddress):
             product, variation = product, product.variations.get(**kwargs)
 
         try:
-            price = product.get_price(currency=self.currency)
-        except ObjectDoesNotExist:
-            logger.error('No price could be found for %s with currency %s' % (
-                product, self.currency))
-            raise
-
-        try:
             item = self.items.get(variation=variation)
         except self.items.model.DoesNotExist:
             item = self.items.model(
@@ -189,16 +183,28 @@ class Order(BillingShippingAddress):
                 currency=self.currency,
                 )
 
+        if relative is not None:
+            item.quantity += relative
+        else:
+            item.quantity = absolute
+
+        # mettlerd: DEBUG
+        print "item.quantity: %s" % item.quantity
+        
+        try:
+            # mettlerd: TODO mind about the fact that we have staggered prices now.
+            # mettlerd: I.e. we need to pass the number of items too. 
+            price = product.get_price(currency=self.currency, quantity=item.quantity)
+        except ObjectDoesNotExist:
+            logger.error('No price could be found for %s with currency %s' % (
+                product, self.currency))
+            raise
+
         item._unit_price = price.unit_price_excl_tax
         item._unit_tax = price.unit_tax
         item.tax_rate = price.tax_class.rate
         item.tax_class = price.tax_class
         item.is_sale = price.is_sale
-
-        if relative is not None:
-            item.quantity += relative
-        else:
-            item.quantity = absolute
 
         if item.quantity > 0:
             item.save()

@@ -15,6 +15,23 @@
 {% endif %}
 
 <div class="prices">
+	
+	product in sale: {{ object.in_sale }}<br/>
+	
+	{% for currency, staggered_price in object.get_prices %}
+	    {% if staggered_price.sale %}
+            {% if staggered_price.normal %}<span style="text-decoration: line-through;">{{ staggered_price.normal }}</span>{% endif %}
+            <strong>{{ staggered_price.sale }}</strong>
+        {% else %}
+            <strong>{{ staggered_price.normal }}</strong>
+        {% endif %}
+		{% if staggered_price.stagger > 1 %}
+			<i>({% trans "If you buy more than " %} {{ staggered_price.stagger }})</i>
+		{% endif %}
+		<br/>
+	{% endfor %}
+	
+	{% comment %}
     {% for currency, prices in object.get_prices %}
         {% if prices.sale %}
             {% if prices.normal %}<span style="text-decoration: line-through;">{{ prices.normal }}</span>{% endif %}
@@ -27,6 +44,7 @@
 		{% endif %}
 		<br/>
     {% endfor %}
+	{% endcomment %}
 </div>
 
 <form method="post" action=".">

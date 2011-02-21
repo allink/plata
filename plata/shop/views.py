@@ -272,6 +272,7 @@ class Shop(object):
 
     @checkout_process_decorator(order_confirmed)
     def cart(self, request, order):
+        # mettlerd: TODO make sure the cart takes the correct stagger price
         if not order or not order.items.count():
             return self.render_cart_empty(request, {})
 
