@@ -168,17 +168,16 @@ class ReadonlyModelAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-# All fields are read only; these models are only used for raw_id_fields support
+# (All fields are read only; these models are only used for raw_id_fields support) No! ;)
 admin.site.register(models.ProductPrice,
-    # mettlerd: make product prices writable
-    # admin_class=ReadonlyModelAdmin,
+    # Make product prices writable, use admin.ModelAdmin as admin_class instead of ReadonlyModelAdmin
     admin_class=admin.ModelAdmin,
     list_display=('__unicode__', 'product', 'currency', '_unit_price', 'tax_included',
         'tax_class', 'stagger', 'is_active', 'valid_from', 'valid_until', 'is_sale'),
     list_filter=('is_active', 'is_sale', 'tax_included', 'tax_class', 'currency'),
-    # mettlerd: make product prices writable
-    # readonly_fields=('product', 'currency', '_unit_price', 'tax_included', 'tax_class',
-    # 'is_active', 'valid_from', 'valid_until', 'is_sale'),
+    # Make product prices writable
+    #readonly_fields=('product', 'currency', '_unit_price', 'tax_included', 'tax_class',
+    #    'is_active', 'valid_from', 'valid_until', 'is_sale'),
     search_fields=('product__name', 'product__description', '_unit_price'),
     can_delete=False,
     )

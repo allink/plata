@@ -156,23 +156,13 @@ class Product(models.Model):
                 self._main_image = None
         return self._main_image
 
-#    def get_price(self, currency=None, **kwargs):
-#        # mettlerd: TODO we'll probably have to make this stagger-ready
-#        kwargs['currency'] = currency or plata.shop_instance().default_currency()
-#        return self.prices.active().filter(**kwargs).latest()
-    
     def get_price(self, currency=None, quantity=1, **kwargs):
-        # mettlerd: TODO we currently ignore further arguments, i.e. **kwargs
-        # mettlerd: This function isn't optimized for performance yet
+        # TODO Refactor. Method not optimized for performance etc. at all.
         kwargs['currency'] = currency or plata.shop_instance().default_currency()
-        stagger_prices = self.get_prices()
+        stagger_prices = self.get_prices(**kwargs)
         # assumption: stagger_prices is sorted in reverse numeric order
         for my_currency, my_staggered_price in stagger_prices:
-#            print my_currency
-#            print my_staggered_price['stagger']
-#            print my_staggered_price['sale']
             if (my_currency == currency) and (quantity >= my_staggered_price['stagger']):
-#                print "same currency and quantity >= my_staggered_price"
                 # assume the sales price is lower than the normal price
                 if my_staggered_price['sale']:
                     return my_staggered_price['sale']
@@ -182,37 +172,11 @@ class Product(models.Model):
                     else:
                         raise "Strange error: Both the sales and normal price are None"
 
-#    def get_prices(self):
-#        from django.core.cache import cache
-#        key = 'product-prices-%s' % self.pk
-#
-#        if cache.has_key(key):
-#            return cache.get(key)
-#
-#        prices = []
-#        for currency in plata.settings.CURRENCIES:
-#            try:
-#                normal, sale = self.prices.active().filter(currency=currency).latest(), None
-#            except self.prices.model.DoesNotExist:
-#                continue
-#            
-#            if normal.is_sale:
-#                sale = normal
-#                try:
-#                    normal = self.prices.active().filter(is_sale=False, currency=currency).latest()
-#                except self.prices.model.DoesNotExist:
-#                    normal = None
-#
-#            prices.append((currency, {
-#                'normal': normal,
-#                'sale': sale,
-#                'stagger': normal.stagger,
-#                }))
-#
-#        cache.set(key, prices)
-#        return prices
+
     
-    def get_prices(self):
+    def get_prices(self, **kwargs):
+        # TODO Refactor. Method not optimized for performance etc. at all.
+        # NOTE: We also handle **kwargs as we use this function in get_price(..) which allowed **kwargs
         from django.core.cache import cache
         key = 'product-prices-%s' % self.pk
         if cache.has_key(key):
@@ -222,7 +186,7 @@ class Product(models.Model):
         for currency in plata.settings.CURRENCIES:
             try:
                 # return all active prices (including stagger prices) for this product and currency
-                normal = self.prices.active().filter(currency=currency)
+                normal = self.prices.active().filter(currency=currency).filter(**kwargs)
             except self.prices.model.DoesNotExist:
                 continue
             
@@ -238,11 +202,11 @@ class Product(models.Model):
             for current_stagger_category in stagger_categories:
                 normal_price = sales_price = None
                 try:
-                    normal_price = self.prices.active().filter(is_sale=False, currency=currency, stagger=current_stagger_category).latest()
+                    normal_price = self.prices.active().filter(is_sale=False, currency=currency, stagger=current_stagger_category).filter(**kwargs).latest()
                 except self.prices.model.DoesNotExist:
                     pass
                 try:
-                    sales_price = self.prices.active().filter(is_sale=True, currency=currency, stagger=current_stagger_category).latest()
+                    sales_price = self.prices.active().filter(is_sale=True, currency=currency, stagger=current_stagger_category).filter(**kwargs).latest()
                 except self.prices.model.DoesNotExist:
                     pass
                 prices.append((currency, {
@@ -255,7 +219,10 @@ class Product(models.Model):
         return prices
 
     def in_sale(self, currency):
+        # TODO doesn't get used anywhere
         prices = dict(self.get_prices())
+#        print "currency: %s" % currency
+#        print "prices[currency]['sale']: %s" % prices[currency]['sale']
         if currency in prices and prices[currency]['sale']:
             return True
         return False

@@ -8,3 +8,4 @@
 .project
 .pydevproject
 mettlerd.py
+/migrations

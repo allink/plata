@@ -187,26 +187,24 @@ class Order(BillingShippingAddress):
             item.quantity += relative
         else:
             item.quantity = absolute
-
-        # mettlerd: DEBUG
-        print "item.quantity: %s" % item.quantity
         
         try:
-            # mettlerd: TODO mind about the fact that we have staggered prices now.
-            # mettlerd: I.e. we need to pass the number of items too. 
+            # In order to handle staggered prices, we need to pass the total number
+            # of ordered product items too. 
             price = product.get_price(currency=self.currency, quantity=item.quantity)
         except ObjectDoesNotExist:
             logger.error('No price could be found for %s with currency %s' % (
                 product, self.currency))
             raise
 
-        item._unit_price = price.unit_price_excl_tax
-        item._unit_tax = price.unit_tax
-        item.tax_rate = price.tax_class.rate
-        item.tax_class = price.tax_class
-        item.is_sale = price.is_sale
-
         if item.quantity > 0:
+            # Moved here to prevent error when deleting all items from cart
+            item._unit_price = price.unit_price_excl_tax
+            item._unit_tax = price.unit_tax
+            item.tax_rate = price.tax_class.rate
+            item.tax_class = price.tax_class
+            item.is_sale = price.is_sale
+            
             item.save()
         else:
             if item.pk:
