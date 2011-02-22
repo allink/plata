@@ -110,6 +110,10 @@ class Order(BillingShippingAddress):
 
     @property
     def shipping(self):
+        if self.items_subtotal >= self.shipping_free_minimum_total:
+            print "no shipping costs"
+            return None # mettlerd or 0?
+    
         if plata.settings.PLATA_PRICE_INCLUDES_TAX:
             if self.shipping_cost is None:
                 return None
