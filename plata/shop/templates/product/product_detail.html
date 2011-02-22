@@ -23,7 +23,7 @@
             <strong>{{ staggered_price.normal }}</strong>
         {% endif %}
 		{% if staggered_price.stagger > 1 %}
-			<i>({% trans "If you buy more than " %} {{ staggered_price.stagger }})</i>
+			<i>({% trans "If you buy at least " %} {{ staggered_price.stagger }})</i>
 		{% endif %}
 		<br/>
 	{% endfor %}

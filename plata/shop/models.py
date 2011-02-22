@@ -62,9 +62,10 @@ class Order(BillingShippingAddress):
         max_length=100, blank=True)
     shipping_cost = models.DecimalField(_('shipping cost'),
         max_digits=18, decimal_places=10, blank=True, null=True)
+    shipping_free_minimum_total = models.DecimalField(_('free shipping if order greater or equal to'),
+        max_digits=18, decimal_places=10, blank=True, null=True)
     shipping_discount = models.DecimalField(_('shipping discount'),
         max_digits=18, decimal_places=10, blank=True, null=True)
-    # mettlerd: TODO add shipping categories
     shipping_tax = models.DecimalField(_('shipping tax'),
         max_digits=18, decimal_places=10, default=Decimal('0.00'))
 
