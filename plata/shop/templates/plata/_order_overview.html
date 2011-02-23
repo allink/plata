@@ -36,6 +36,13 @@
     {% trans "No discounts" %}
 {% endfor %}
 
+<h2>{% trans "Shipping costs" %}</h2>
+<table border="1">
+<tr>
+    <td>{{ order.currency }} {{ order.shipping_cost|floatformat:2 }}</td>
+</tr>
+</table>
+
 <h2>{% trans "Total" %}</h2>
 <table>
 <tr>
@@ -45,6 +52,10 @@
 <tr>
     <th>{% trans "discount"|capfirst %}</th>
     <td>{{ order.currency }} {{ order.discount|floatformat:2 }}</td>
+</tr>
+<tr>
+    <th>{% trans "shipping costs"|capfirst %}</th>
+    <td>{{ order.currency }} {{ order.shipping_cost|floatformat:2 }}</td>
 </tr>
 <tr>
     <th>{% trans "tax"|capfirst %}</th>

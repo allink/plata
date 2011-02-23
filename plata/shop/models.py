@@ -62,8 +62,6 @@ class Order(BillingShippingAddress):
         max_length=100, blank=True)
     shipping_cost = models.DecimalField(_('shipping cost'),
         max_digits=18, decimal_places=10, blank=True, null=True)
-    shipping_free_minimum_total = models.DecimalField(_('free shipping if order greater or equal to'),
-        max_digits=18, decimal_places=10, blank=True, null=True)
     shipping_discount = models.DecimalField(_('shipping discount'),
         max_digits=18, decimal_places=10, blank=True, null=True)
     shipping_tax = models.DecimalField(_('shipping tax'),
@@ -110,10 +108,6 @@ class Order(BillingShippingAddress):
 
     @property
     def shipping(self):
-        if self.items_subtotal >= self.shipping_free_minimum_total:
-            print "no shipping costs"
-            return None # mettlerd or 0?
-    
         if plata.settings.PLATA_PRICE_INCLUDES_TAX:
             if self.shipping_cost is None:
                 return None

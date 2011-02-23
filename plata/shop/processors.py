@@ -132,6 +132,32 @@ class FixedAmountShippingProcessor(ProcessorBase):
             order.shipping_discount, order.shipping_tax)
         order.data['tax_details'] = tax_details.items()
 
+class FixedAmountOrZeroShippingProcessor(ProcessorBase):
+    def process(self, order, items):
+        """
+        Use this processor if you use a fixed amount for shipping costs
+        but allow for free shipping after a defined minimum amount.
+        """
+        cost = plata.settings.PLATA_SHIPPING_FIXEDAMOUNT['cost']
+        tax = plata.settings.PLATA_SHIPPING_FIXEDAMOUNT['tax']
+        waiver_minimum = plata.settings.PLATA_SHIPPING_ZERO_WAIVER_MINIMUM
+
+        if order.items_subtotal >= waiver_minimum:
+            order.shipping_cost = 0
+            order.shipping_discount = 0
+            order.shipping_tax = 0
+        else:
+            order.shipping_cost, __ = self.split_cost(cost, tax)
+            order.shipping_discount = min(order.discount_remaining, order.shipping_cost)
+            order.shipping_tax = tax / 100 * (order.shipping_cost - order.shipping_discount)
+
+        self.set_processor_value('total', 'shipping',
+            order.shipping_cost - order.shipping_discount + order.shipping_tax)
+
+        tax_details = dict(order.data.get('tax_details', []))
+        self.add_tax_details(tax_details, tax, order.shipping_cost,
+            order.shipping_discount, order.shipping_tax)
+        order.data['tax_details'] = tax_details.items()
 
 class OrderSummationProcessor(ProcessorBase):
     def process(self, order, items):

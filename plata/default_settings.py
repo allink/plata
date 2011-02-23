@@ -26,7 +26,8 @@ PLATA_SHIPPING_FIXEDAMOUNT = getattr(settings, 'PLATA_SHIPPING_FIXEDAMOUNT', {
     'cost': Decimal('8.00'),
     'tax': Decimal('7.6'),
     })
-
+# Specify the minimum order amount (not considering discounts, not currency-aware) after which shipping is free.
+PLATA_SHIPPING_ZERO_WAIVER_MINIMUM = getattr(settings, 'PLATA_SHIPPING_ZERO_WAIVER_MINIMUM', 100)
 PLATA_REPORTING_STATIONERY = getattr(settings, 'PLATA_REPORTING_STATIONERY',
     'pdfdocument.elements.ExampleStationery')
 PLATA_REPORTING_ADDRESSLINE = getattr(settings, 'PLATA_REPORTING_ADDRESSLINE', '')
