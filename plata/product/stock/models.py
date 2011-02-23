@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 
 from plata.product.models import ProductVariation
 from plata.shop.models import Order, OrderPayment
-
+import plata
+import sys
 
 class PeriodManager(models.Manager):
     def current(self):
@@ -58,6 +59,9 @@ class StockTransactionManager(models.Manager):
         return self.filter(period=Period.objects.current()).filter(self._expired())
 
     def items_in_stock(self, product, update=False, query=None):
+        if plata.settings.PLATA_STOCK_MANAGMENT_DISABLED:
+            return sys.maxint
+            
         queryset = self.stock().filter(product=product)
         if query:
             queryset.filter(query)
