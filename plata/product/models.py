@@ -9,7 +9,14 @@ import plata
 from plata.compat import product as itertools_product
 from plata.fields import CurrencyField
 
-
+#import sys
+#import feincms
+#print "---------------------------------------------------------"
+#print feincms
+#print "---------------------------------------------------------"
+#print sys.path
+#print "---------------------------------------------------------"
+from feincms.translations import TranslatedObjectMixin, Translation
 
 class TaxClass(models.Model):
     name = models.CharField(_('name'), max_length=100)
@@ -113,7 +120,8 @@ class ProductManager(models.Manager):
                 ).filter(variations__orderitem__order__items__variation__product=product))
 
 
-class Product(models.Model):
+#class Product(models.Model):
+class Product(models.Model, TranslatedObjectMixin):
     is_active = models.BooleanField(_('is active'), default=True)
     is_featured = models.BooleanField(_('is featured'), default=False)
     name = models.CharField(_('name'), max_length=100)
@@ -136,6 +144,8 @@ class Product(models.Model):
     objects = ProductManager()
 
     def __unicode__(self):
+        # if name were in ProductTranslation, we'd use this:
+        #return "%s" % (self.translation.name)
         return self.name
 
     def save(self, *args, **kwargs):
@@ -258,6 +268,8 @@ class Product(models.Model):
 
         return items
 
+class ProductTranslation(Translation(Product)):
+    descriptiontest = models.TextField(verbose_name=_('descriptiontest'), blank=True)
 
 class ProductVariation(models.Model):
     product = models.ForeignKey(Product, related_name='variations')

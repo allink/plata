@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from . import models
 
+import plata
 
 class ProductPriceInline(admin.TabularInline):
     model = models.ProductPrice
@@ -116,11 +117,16 @@ class ProductVariationInline(admin.TabularInline):
 class OptionInline(admin.TabularInline):
     model = models.Option
 
+class ProductTranslationInline(admin.StackedInline):
+    model = models.ProductTranslation
+    max_num = len(plata.settings.LANGUAGES)
 
 class ProductAdmin(admin.ModelAdmin):
     filter_horizontal = ('categories', 'option_groups')
     form = ProductForm
-    inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
+    # TODO check whether this works
+    #inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
+    inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline, ProductTranslationInline]
     list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')
     list_display_links = ('name',)
     list_filter = ('is_active', 'is_featured', 'categories')
@@ -189,3 +195,6 @@ admin.site.register(models.ProductVariation,
     readonly_fields=('product', 'is_active', 'sku', 'items_in_stock', 'options', 'ordering'),
     search_fields=('product__name', 'product__description'),
     )
+
+# TODO This is a very basic admin interface. Should be improved.
+#admin.site.register(models.ProductTranslation, admin.ModelAdmin)

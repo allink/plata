@@ -40,3 +40,8 @@ PLATA_ORDER_BCC = getattr(settings, 'PLATA_ORDER_BCC',
 PLATA_SHIPPING_INFO = getattr(settings, 'PLATA_SHIPPING_INFO', PLATA_ORDER_BCC)
 
 CURRENCIES = getattr(settings, 'CURRENCIES', ('CHF', 'EUR', 'USD'))
+
+PLATA_DISABLE_STOCK_HANDLING = getattr(settings, 'PLATA_DISABLE_STOCK_HANDLING', False)
+
+# Translations
+LANGUAGES = getattr(settings, 'LANGUAGES', (('en', 'English'), ('de', 'German')))
