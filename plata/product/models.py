@@ -126,7 +126,10 @@ class Product(models.Model):
     description = models.TextField(_('description'), blank=True)
     option_groups = models.ManyToManyField(OptionGroup, related_name='products',
         blank=True, null=True, verbose_name=_('option groups'))
-
+    parent = models.ForeignKey('self', blank=True, null=True,
+           limit_choices_to={'parent__isnull': True},
+           related_name='children', verbose_name=_('parent'))
+           
     class Meta:
         ordering = ['ordering', 'name']
         verbose_name = _('product')

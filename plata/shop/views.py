@@ -211,7 +211,12 @@ class Shop(object):
                     self.fields['option_%s' % group.id] = forms.ModelChoiceField(
                         queryset=group.options.filter(variations__product=product).distinct(),
                         label=group.name)
-
+                if product.children.all():
+                    self.fields['option_subproduct'] = forms.ModelChoiceField(
+                        queryset=product.children.all().distinct(),
+                        label='child')
+                        
+                        
             def clean(self):
                 data = super(Form, self).clean()
 

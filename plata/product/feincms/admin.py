@@ -16,7 +16,7 @@ class CMSProductForm(ProductForm):
 
 class ProductAdmin(ProductAdmin, ItemEditor):
     fieldsets = [(None, {
-        'fields': ('is_active', 'name', 'slug', 'sku', 'is_featured'),
+        'fields': ('is_active', 'name', 'slug', 'sku', 'is_featured','parent'),
         }),
         FEINCMS_CONTENT_FIELDSET,
         (_('Properties'), {
