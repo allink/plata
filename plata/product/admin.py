@@ -128,6 +128,7 @@ class ProductAdmin(admin.ModelAdmin):
     #inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline, ProductTranslationInline]
     list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')
+#    list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering', 'descriptiontest')
     list_display_links = ('name',)
     list_filter = ('is_active', 'is_featured', 'categories')
     prepopulated_fields = {'slug': ('name',), 'sku': ('name',)}
@@ -148,12 +149,34 @@ class ProductAdmin(admin.ModelAdmin):
                 # variation which is needed
                 form.instance.create_variations()
 
+class CategoryTranslationInline(admin.StackedInline):
+    model = models.CategoryTranslation
+    max_num = len(plata.settings.LANGUAGES)
+
+#class CategoryAdmin(admin.ModelAdmin):
+#    inlines = [CategoryTranslationInline]
+#    list_display=('is_active', 'is_internal', '__unicode__', 'ordering')
+#    list_display_links=('__unicode__',)
+#    list_filter=('is_active', 'is_internal')
+#    prepopulated_fields={'slug': ('name',)}
+#    search_fields=('name', 'description')
+# register the custom model admin:
+#admin.site.register(models.Category, CategoryAdmin)
 
 admin.site.register(models.TaxClass,
     list_display=('name', 'rate', 'priority'),
     )
 
+#admin.site.register(models.Category,
+#    list_display=('is_active', 'is_internal', '__unicode__', 'ordering'),
+#    list_display_links=('__unicode__',),
+#    list_filter=('is_active', 'is_internal'),
+#    prepopulated_fields={'slug': ('name',)},
+#    search_fields=('name', 'description'),
+#    )
+
 admin.site.register(models.Category,
+    inlines = [CategoryTranslationInline],
     list_display=('is_active', 'is_internal', '__unicode__', 'ordering'),
     list_display_links=('__unicode__',),
     list_filter=('is_active', 'is_internal'),

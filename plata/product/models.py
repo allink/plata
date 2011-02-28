@@ -72,6 +72,17 @@ class Category(models.Model):
         return ('plata_category_detail', (), {'object_id': self.pk})
 
 
+class CategoryTranslation(Translation(Category)):
+    teasertext = models.TextField(verbose_name=_('teasertext'), blank=True)
+    
+    class Meta:
+        verbose_name = _('Category Translation')
+        verbose_name_plural = _('Category Translations')
+
+    def __unicode__(self):
+        return self.teasertext
+
+
 class OptionGroup(models.Model):
     name = models.CharField(_('name'), max_length=100)
 
@@ -268,8 +279,17 @@ class Product(models.Model, TranslatedObjectMixin):
 
         return items
 
+
 class ProductTranslation(Translation(Product)):
     descriptiontest = models.TextField(verbose_name=_('descriptiontest'), blank=True)
+    
+    class Meta:
+        verbose_name = _('Product Translation')
+        verbose_name_plural = _('Product Translations')
+
+    def __unicode__(self):
+        return self.descriptiontest
+
 
 class ProductVariation(models.Model):
     product = models.ForeignKey(Product, related_name='variations')
