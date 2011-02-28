@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from decimal import Decimal
 from functools import wraps
 import logging
@@ -211,9 +212,11 @@ class Shop(object):
                     self.fields['option_%s' % group.id] = forms.ModelChoiceField(
                         queryset=group.options.filter(variations__product=product).distinct(),
                         label=group.name)
+                        
                 if product.children.all():
                     self.fields['option_subproduct'] = forms.ModelChoiceField(
-                        queryset=product.children.all().distinct(),
+                        queryset=product.children.all().distinct(), 
+                        empty_label=_(u'Bitte wählen...'),
                         label='child')
                         
                         

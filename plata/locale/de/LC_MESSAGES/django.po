@@ -1129,3 +1129,7 @@ msgstr "Zum Warenkorb hinzufügen"
 
 #~ msgid "Insufficient stock"
 #~ msgstr "Ungenügender Lagerbestand"
+
+
+msgid "Please choose..."
+msgstr "Bitte wählen..."
