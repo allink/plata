@@ -4,8 +4,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from . import models
 
+class ProducerImageInline(admin.TabularInline):
+    model = models.ProducerImage
+    extra = 0
 
 admin.site.register(models.Producer,
+    inlines = [ProducerImageInline],
     list_display=('is_active', 'name', 'ordering'),
     list_display_links=('name',),
     prepopulated_fields={'slug': ('name',)},

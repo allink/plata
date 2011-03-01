@@ -29,5 +29,21 @@ class Producer(models.Model):
         return self.name
 
 
+class ProducerImage(models.Model):
+    producer = models.ForeignKey(Producer, verbose_name=_('producer'),
+        related_name='images')
+    image = models.ImageField(_('image'),
+        upload_to=lambda instance, filename: 'producer/%s/%s' % (instance.producer.slug, filename))
+    ordering = models.PositiveIntegerField(_('ordering'), default=0)
+
+    class Meta:
+        ordering = ['ordering']
+        verbose_name = _('producer image')
+        verbose_name_plural = _('producer images')
+
+    def __unicode__(self):
+        return self.image.name
+
+
 Product.add_to_class('producer', models.ForeignKey(Producer, blank=True, null=True,
     related_name='products', verbose_name=_('producer')))

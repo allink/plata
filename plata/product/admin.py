@@ -11,6 +11,7 @@ class ProductPriceInline(admin.TabularInline):
     model = models.ProductPrice
     extra = 0
 
+
 class ProductImageInline(admin.TabularInline):
     model = models.ProductImage
     extra = 0
@@ -124,11 +125,10 @@ class ProductTranslationInline(admin.StackedInline):
 class ProductAdmin(admin.ModelAdmin):
     filter_horizontal = ('categories', 'option_groups')
     form = ProductForm
-    # TODO check whether this works
+    # TODO check why ProductTranslationInline isn't displayed
     #inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline, ProductTranslationInline]
     list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')
-#    list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering', 'descriptiontest')
     list_display_links = ('name',)
     list_filter = ('is_active', 'is_featured', 'categories')
     prepopulated_fields = {'slug': ('name',), 'sku': ('name',)}
@@ -148,6 +148,10 @@ class ProductAdmin(admin.ModelAdmin):
                 # No options selected, no variations yet: Create the single
                 # variation which is needed
                 form.instance.create_variations()
+
+class CategoryImageInline(admin.TabularInline):
+    model = models.CategoryImage
+    extra = 0
 
 class CategoryTranslationInline(admin.StackedInline):
     model = models.CategoryTranslation
@@ -176,7 +180,7 @@ admin.site.register(models.TaxClass,
 #    )
 
 admin.site.register(models.Category,
-    inlines = [CategoryTranslationInline],
+    inlines = [CategoryImageInline, CategoryTranslationInline],
     list_display=('is_active', 'is_internal', '__unicode__', 'ordering'),
     list_display_links=('__unicode__',),
     list_filter=('is_active', 'is_internal'),

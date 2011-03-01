@@ -41,7 +41,7 @@ class CategoryManager(models.Manager):
         return self.filter(is_active=True, is_internal=False)
 
 
-class Category(models.Model):
+class Category(models.Model, TranslatedObjectMixin):
     is_active = models.BooleanField(_('is active'), default=True)
     is_internal = models.BooleanField(_('is internal'), default=False,
         help_text=_('Only used to internally organize products, f.e. for discounting.'))
@@ -76,11 +76,27 @@ class CategoryTranslation(Translation(Category)):
     teasertext = models.TextField(verbose_name=_('teasertext'), blank=True)
     
     class Meta:
-        verbose_name = _('Category Translation')
-        verbose_name_plural = _('Category Translations')
+        verbose_name = _('category translation')
+        verbose_name_plural = _('category translations')
 
     def __unicode__(self):
         return self.teasertext
+
+
+class CategoryImage(models.Model):
+    category = models.ForeignKey(Category, verbose_name=_('category'),
+        related_name='images')
+    image = models.ImageField(_('image'),
+        upload_to=lambda instance, filename: 'categories/%s/%s' % (instance.category.slug, filename))
+    ordering = models.PositiveIntegerField(_('ordering'), default=0)
+
+    class Meta:
+        ordering = ['ordering']
+        verbose_name = _('category image')
+        verbose_name_plural = _('category images')
+
+    def __unicode__(self):
+        return self.image.name
 
 
 class OptionGroup(models.Model):
@@ -284,8 +300,8 @@ class ProductTranslation(Translation(Product)):
     descriptiontest = models.TextField(verbose_name=_('descriptiontest'), blank=True)
     
     class Meta:
-        verbose_name = _('Product Translation')
-        verbose_name_plural = _('Product Translations')
+        verbose_name = _('product translation')
+        verbose_name_plural = _('product translations')
 
     def __unicode__(self):
         return self.descriptiontest

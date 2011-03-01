@@ -7,11 +7,24 @@
 {% block content %}
 <h1>{{ object }}</h1>
 
+{% trans "by" %}: 
+{% if object.producer %}
+	{{ object.producer}}
+{% else %}
+	({% trans "noname/unknown" %})
+{% endif%}
+<br/>
+
 {{ object.description|linebreaks }}
 
 {% if object.cmsproduct %}
 {% load feincms_tags %}
 {% feincms_render_region object.cmsproduct "main" request %}
+{% endif %}
+
+{% if object.main_image %}
+<img src="{{ MEDIA_URL }}{{ object.main_image }}" title="{{ MEDIA_URL }}{{ object.main_image }}" alt="{{ MEDIA_URL }}{{ object.main_image }}" /><br/>
+<br/>
 {% endif %}
 
 <div class="prices">
