@@ -218,8 +218,25 @@ class Shop(object):
                         queryset=product.children.all().distinct(), 
                         empty_label=_(u'Bitte wählen...'),
                         label='child')
-                        
-                        
+                
+                accessories = product.accessories.all()
+                if accessories:
+                    self.fields['option_accessory'] = forms.ModelChoiceField(
+                        queryset=product.accessories.all().distinct(), 
+                        empty_label=_(u'Bitte wählen...'),
+                        label='accessories')    
+                    try:        
+                        first = accessories[0]
+                        for group in first.option_groups.all():
+                            self.fields['option_%s' % group.id]  = forms.ModelChoiceField(
+                                queryset=group.options.filter(variations__product=first).distinct(), 
+                                empty_label=None,
+                                widget=forms.widgets.RadioSelect,
+                                label=_('variations') )
+                                
+                    except ObjectDoesNotExist:
+                        pass
+                                               
             def clean(self):
                 data = super(Form, self).clean()
 

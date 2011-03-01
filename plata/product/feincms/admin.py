@@ -20,7 +20,7 @@ class ProductAdmin(ProductAdmin, ItemEditor):
         }),
         FEINCMS_CONTENT_FIELDSET,
         (_('Properties'), {
-            'fields': ('ordering', 'description', 'producer', 'categories',
+            'fields': ('ordering', 'description', 'producer', 'categories','accessory_of',
                 'option_groups', 'create_variations'),
         }),
         ]

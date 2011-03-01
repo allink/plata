@@ -129,7 +129,10 @@ class Product(models.Model):
     parent = models.ForeignKey('self', blank=True, null=True,
            limit_choices_to={'parent__isnull': True},
            related_name='children', verbose_name=_('parent'))
-           
+    accessory_of = models.ManyToManyField('self', blank=True, null=True,
+        limit_choices_to={'parent__isnull': True}, symmetrical=False,
+        related_name='accessories', verbose_name=_('accessory product of'))  
+                   
     class Meta:
         ordering = ['ordering', 'name']
         verbose_name = _('product')
