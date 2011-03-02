@@ -222,6 +222,3 @@ admin.site.register(models.ProductVariation,
     readonly_fields=('product', 'is_active', 'sku', 'items_in_stock', 'options', 'ordering'),
     search_fields=('product__name', 'product__description'),
     )
-
-# TODO This is a very basic admin interface. Should be improved.
-#admin.site.register(models.ProductTranslation, admin.ModelAdmin)

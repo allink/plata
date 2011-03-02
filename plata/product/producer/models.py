@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from plata.product.models import Product
 
-
 class ProducerManager(models.Manager):
     def active(self):
         return self.filter(is_active=True)
@@ -27,6 +26,15 @@ class Producer(models.Model):
 
     def __unicode__(self):
         return self.name
+    
+    @property
+    def main_image(self):
+        if not hasattr(self, '_main_image'):
+            try:
+                self._main_image = self.images.all()[0]
+            except IndexError:
+                self._main_image = None
+        return self._main_image
 
 
 class ProducerImage(models.Model):
@@ -44,6 +52,8 @@ class ProducerImage(models.Model):
     def __unicode__(self):
         return self.image.name
 
-
+# TODO mettlerd: Shouldn't related_name rather be 'producers' for consistency?
+#Product.add_to_class('producer', models.ForeignKey(Producer, blank=True, null=True,
+#    related_name='products', verbose_name=_('producer')))
 Product.add_to_class('producer', models.ForeignKey(Producer, blank=True, null=True,
-    related_name='products', verbose_name=_('producer')))
+    related_name='producers', verbose_name=_('producer')))

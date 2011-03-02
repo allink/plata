@@ -209,8 +209,6 @@ class Product(models.Model, TranslatedObjectMixin):
                     else:
                         raise "Strange error: Both the sales and normal price are None"
 
-
-    
     def get_prices(self, **kwargs):
         # TODO Refactor. Method not optimized for performance etc. at all.
         # NOTE: We also handle **kwargs as we use this function in get_price(..) which allowed **kwargs
@@ -294,6 +292,27 @@ class Product(models.Model, TranslatedObjectMixin):
             items[key] = variation.items_in_stock
 
         return items
+    
+    # TODO mettlerd: return a list of unique, active producers of all active products
+    def get_producers(self, currency=None, **kwargs):
+#        kwargs['currency'] = currency or plata.shop_instance().default_currency()
+#        stagger_prices = self.get_prices(**kwargs)
+        # TODO mettlerd: add try..except
+#        active_producers = self.producers.active().filter(is_sale=False, currency=currency, stagger=current_stagger_category).filter(**kwargs).latest()
+        active_producers = self.producer
+#        print "self.producer: %s" % active_producers
+        return active_producers
+#        # assumption: stagger_prices is sorted in reverse numeric order
+#        for my_currency, my_staggered_price in stagger_prices:
+#            if (my_currency == currency) and (quantity >= my_staggered_price['stagger']):
+#                # assume the sales price is lower than the normal price
+#                if my_staggered_price['sale']:
+#                    return my_staggered_price['sale']
+#                else:
+#                    if my_staggered_price['normal']:
+#                        return my_staggered_price['normal']
+#                    else:
+#                        raise "Strange error: Both the sales and normal price are None"
 
 
 class ProductTranslation(Translation(Product)):
