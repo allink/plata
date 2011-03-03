@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{{ object }} - {% trans "Products" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div id="breadcrumbs">
+	{% trans "Producer" %} &gt; {{ selectedproducer.name }} &gt; {{ object.name }}
+</div>
+
+<div id="producerlogo">
+	<img src="{{ MEDIA_URL }}{{ selectedproducer.main_image }}" alt="{{ selectedproducer }}" title="{{ selectedproducer }}" />
+</div>
+
+<div id="sidebar_producers_titel">
+	{% trans "Producers" %}<br/>
+</div>
+<div id="sidebar_producers">
+	{% for producer in producers %}
+		<a href="{{ producer.slug }}">{{ producer }}</a><br/>
+	{% endfor %}
+</div>
+
+<div id="sidebar_categories_titel">
+	{% trans "Categories" %}<br/>
+</div>
+<div id="sidebar_categories">
+	{% for category in categories %}
+		<a href="{{ category.slug }}">{{ category }}</a><br/>
+	{% endfor %}
+</div>
+
+<div id="mainpaine_product_titel">
+	{% comment %}
+	{% trans "Products of producer" %}<br/>
+	{% endcomment %}
+</div>
+<div id="mainpane_product">
+	{% comment %}
+	{% for product_of_producer in products_of_producer %}
+		<a href="{{ product_of_producer.slug }}"><img src="{{ MEDIA_URL }}{{ product_of_producer.main_image }}" alt="{{ product_of_producer }}" title="{{ product_of_producer }}" /></a><br/>
+	{% endfor %}
+	{% endcomment %}
+</div>
+
+<h1>{{ object }}</h1>
+
+{% trans "by" %}: 
+{% if object.producer %}
+	{{ object.producer}}
+{% else %}
+	({% trans "noname/unknown" %})
+{% endif%}
+<br/>
+
+{{ object.description|linebreaks }}
+
+{% if object.cmsproduct %}
+{% load feincms_tags %}
+{% feincms_render_region object.cmsproduct "main" request %}
+{% endif %}
+
+{% if object.main_image %}
+<img src="{{ MEDIA_URL }}{{ object.main_image }}" title="{{ MEDIA_URL }}{{ object.main_image }}" alt="{{ MEDIA_URL }}{{ object.main_image }}" /><br/>
+<br/>
+{% endif %}
+
+<div class="prices">
+	{% for currency, staggered_price in object.get_prices %}
+	    {% if staggered_price.sale %}
+            {% if staggered_price.normal %}<span style="text-decoration: line-through;">{{ staggered_price.normal }}</span>{% endif %}
+            <strong>{{ staggered_price.sale }}</strong>
+        {% else %}
+            <strong>{{ staggered_price.normal }}</strong>
+        {% endif %}
+		{% if staggered_price.stagger > 1 %}
+			<i>({% trans "If you buy at least " %} {{ staggered_price.stagger }})</i>
+		{% endif %}
+		<br/>
+	{% endfor %}
+</div>
+
+<form method="post" action=".">
+{% csrf_token %}
+<table>
+{{ form }}
+</table>
+<input type="submit" value="{% trans "Add to cart" %}" />
+</form>
+{% endblock %}

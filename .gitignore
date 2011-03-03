@@ -7,5 +7,6 @@
 ._*
 .project
 .pydevproject
-mettlerd.py
 /migrations
+.settings
+/example*

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load i18n plata_tags %}
+
+{% block title %}{% trans "Login" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Login" %}</h1>
+
+<div id="sidebar_producers_titel">
+	{% trans "Producers" %}<br/>
+</div>
+<div id="sidebar_producers">
+	{% for producer in producers %}
+		<a href="{{ producer.slug }}">{{ producer }}</a><br/>
+	{% endfor %}
+</div>
+
+<div id="sidebar_categories_titel">
+	{% trans "Categories" %}<br/>
+</div>
+<div id="sidebar_categories">
+	{% for category in categories %}
+		<a href="{{ category.slug }}">{{ category }}</a><br/>
+	{% endfor %}
+</div>
+
+<div id="mainpaine_login">
+	{% if user.is_authenticated %}
+	{% else %}
+	{% trans "Please enter your credentials" %}<br/>
+	{% endif %}
+</div>
+<div id="mainpane_login">
+{% if loginform %}
+    <form method="post" action=".">{% csrf_token %}
+    <input type="hidden" name="_login" value="1" />
+    {% form_errors loginform %}
+
+    <table>
+        {{ loginform }}
+    <tr>
+        <td></td>
+        <td><button type="submit">{% trans "Submit" %}</button></td>
+    </tr>
+    </table>
+    </form>
+{% endif %}
+</div>
+
+{% endblock %}

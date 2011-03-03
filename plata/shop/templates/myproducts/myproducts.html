@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "My Products" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1>{% trans "My Products" %}</h1>
+
+
+{% comment %}
+<div id="sidebar_producers_titel">
+	{% trans "Producers" %}<br/>
+</div>
+<div id="sidebar_producers">
+	{% for producer in producers %}
+		<a href="{{ producer.slug }}">{{ producer }}</a><br/>
+	{% endfor %}
+</div>
+
+<div id="sidebar_categories_titel">
+	{% trans "Categories" %}<br/>
+</div>
+<div id="sidebar_categories">
+	{% for category in categories %}
+		<a href="{{ category.slug }}">{{ category }}</a><br/>
+	{% endfor %}
+</div>
+
+<div id="mainpaine_producers_titel">
+	{% trans "Producers" %}<br/>
+</div>
+<div id="mainpane_producers">
+	{% for producer in producers %}
+		<a href="{{ producer.slug }}"><img src="{{ MEDIA_URL }}{{ producer.main_image }}" alt="{{ producer }}" title="{{ producer }}" /></a><br/>
+	{% endfor %}
+</div>
+{% endcomment %}
+
+{% include "_pagination.html" %}
+{% endblock %}
