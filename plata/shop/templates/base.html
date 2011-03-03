@@ -94,11 +94,15 @@ table td {
 <a href="/"><span>{% trans "Home" %}</span></a>
 {#<a href="/products/"><span>{% trans "Products" %}</span></a>#}
 <a href="/producers/"><span>{% trans "Producers" %}</span></a>
-<a href="/products_old/"><span>{% trans "Products (old)" %}</span></a>
+{#<a href="/products_old/"><span>{% trans "Products (old)" %}</span></a>#}
 <a href="/myproducts/"><span>{% trans "My Products" %}</span></a>
 <a href="/cart/"><span>{% trans "Cart" %}</span></a>
 <div id="navigation_small">
-<a href="/login/"><span>{% trans "Login" %}</span></a>
+{% if user.is_authenticated %}
+	<a href="/logout/"><span>{% trans "Logout" %} (<td>{{ user }}</td>)</span></a>
+{% else %}
+	<a href="/login/"><span>{% trans "Login" %}</span></a>
+{% endif %}	
 <a href="/support/"><span>{% trans "Support" %}</span></a>
 </div>
 <br style="clear:left" />
