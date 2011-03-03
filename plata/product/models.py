@@ -41,6 +41,8 @@ class Category(models.Model):
     name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), unique=True)
     ordering = models.PositiveIntegerField(_('ordering'), default=0)
+    title = models.CharField(_('menu title'), max_length=100,blank=True)
+    subtitle = models.CharField(_('menu subtitle'), max_length=100,blank=True)    
     description = models.TextField(_('description'), blank=True)
 
     parent = models.ForeignKey('self', blank=True, null=True,
@@ -169,6 +171,15 @@ class Product(models.Model):
         miniature = basename + '_' + plata.settings.PLATA_PRODUCT_THUMBNAIL_SIZE + format
         miniature_url = filehead + '/' + miniature
         return miniature_url
+
+    @property
+    def second_image(self):
+        if not hasattr(self, '_second_image'):
+            try:
+                self._second_image = self.images.all()[1]
+            except IndexError:
+                self._second_image = None
+        return self._second_image
 
     def get_price(self, currency=None, **kwargs):
         kwargs['currency'] = currency or plata.shop_instance().default_currency()
