@@ -435,23 +435,22 @@ class Shop(object):
 
     @checkout_process_decorator(cart_not_empty, order_confirmed, insufficient_stock)
     def checkout(self, request, order):
-        # if not request.user.is_authenticated():
-        #     if request.method == 'POST' and '_login' in request.POST:
-        #         loginform = AuthenticationForm(data=request.POST, prefix='login')
-        # 
-        #         if loginform.is_valid():
-        #             user = loginform.get_user()
-        #             auth.login(request, user)
-        # 
-        #             order.contact = self.contact_from_user(user)
-        #             order.save()
-        # 
-        #             return HttpResponseRedirect('.')
-        #     else:
-        #         loginform = AuthenticationForm(prefix='login')
-        # else:
-        #     loginform = None
-        loginform = None
+        if plata.settings.PLATA_AUTH_REQUIRED_TO_ORDER and not request.user.is_authenticated():
+            if request.method == 'POST' and '_login' in request.POST:
+                loginform = AuthenticationForm(data=request.POST, prefix='login')
+        
+                if loginform.is_valid():
+                    user = loginform.get_user()
+                    auth.login(request, user)
+        
+                    order.contact = self.contact_from_user(user)
+                    order.save()
+        
+                    return HttpResponseRedirect('.')
+            else:
+                loginform = AuthenticationForm(prefix='login')
+        else:
+            loginform = None
 
         if order.status < self.order_model.CHECKOUT:
             order.update_status(self.order_model.CHECKOUT, 'Checkout process started')
@@ -481,13 +480,12 @@ class Shop(object):
             if orderform.is_valid():
                 order = orderform.save()
                 
-                if True:
+                if plata.settings.PLATA_SIMPLE_CHECKOUT_ENABLED:
                     order.update_status(self.order_model.CONFIRMED, 'Confirmation given')
                     signals.order_confirmed.send(sender=self, order=order)
-                    #payment_module = payment_module_dict[form.cleaned_data['payment_method']]
                     return plata.payment.modules.cod.PaymentProcessor(plata.shop_instance()).process_order_confirmed(request, order)
 
-                return redirect('plata_shop_confirmation')
+                return redirect('plata_shop_discounts')
         else:
             orderform = OrderForm(**orderform_kwargs)
 

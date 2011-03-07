@@ -6,6 +6,8 @@ from django.conf import settings
 PLATA_PRICE_INCLUDES_TAX = getattr(settings, 'PLATA_PRICE_INCLUDES_TAX', True)
 PLATA_STOCK_MANAGMENT_DISABLED = getattr(settings, 'PLATA_STOCK_MANAGMENT_DISABLED', False)
 PLATA_PRODUCT_THUMBNAIL_SIZE = getattr(settings, 'PLATA_PRODUCT_THUMBNAIL_SIZE', '104x104')
+PLATA_SIMPLE_CHECKOUT_ENABLED = getattr(settings, 'PLATA_SIMPLE_CHECKOUT_ENABLED', False)
+PLATA_AUTH_REQUIRED_TO_ORDER = getattr(settings, 'PLATA_AUTH_REQUIRED_TO_ORDER', True)
 
 PLATA_ORDER_PROCESSORS = getattr(settings, 'PLATA_ORDER_PROCESSORS', [
     'plata.shop.processors.InitializeOrderProcessor',
