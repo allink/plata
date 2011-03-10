@@ -118,7 +118,7 @@ class OptionInline(admin.TabularInline):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    filter_horizontal = ('categories', 'option_groups' ,'accessory_of')
+    filter_horizontal = ('categories', 'option_groups')
     form = ProductForm
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
     list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')

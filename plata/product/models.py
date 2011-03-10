@@ -41,8 +41,8 @@ class Category(models.Model):
     name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), unique=True)
     ordering = models.PositiveIntegerField(_('ordering'), default=0)
-    title = models.CharField(_('menu title'), max_length=100,blank=True)
-    subtitle = models.CharField(_('menu subtitle'), max_length=100,blank=True)    
+    # title = models.CharField(_('menu title'), max_length=100,blank=True)
+    # subtitle = models.CharField(_('menu subtitle'), max_length=100,blank=True)    
     description = models.TextField(_('description'), blank=True)
 
     parent = models.ForeignKey('self', blank=True, null=True,
@@ -128,12 +128,12 @@ class Product(models.Model):
     description = models.TextField(_('description'), blank=True)
     option_groups = models.ManyToManyField(OptionGroup, related_name='products',
         blank=True, null=True, verbose_name=_('option groups'))
-    parent = models.ForeignKey('self', blank=True, null=True,
-           limit_choices_to={'parent__isnull': True},
-           related_name='children', verbose_name=_('parent'))
-    accessory_of = models.ManyToManyField('self', blank=True, null=True,
-        limit_choices_to={'parent__isnull': True}, symmetrical=False,
-        related_name='accessories', verbose_name=_('accessory product of'))  
+    # parent = models.ForeignKey('self', blank=True, null=True,
+    #        limit_choices_to={'parent__isnull': True},
+    #        related_name='children', verbose_name=_('parent'))
+    # accessory_of = models.ManyToManyField('self', blank=True, null=True,
+    #     limit_choices_to={'parent__isnull': True}, symmetrical=False,
+    #     related_name='accessories', verbose_name=_('accessory product of'))  
                    
     class Meta:
         ordering = ['ordering', 'name']
@@ -368,42 +368,42 @@ class ProductImage(models.Model):
 
     def __unicode__(self):
         return self.image.name
-       
-    def thumbnail(self, file, size=plata.settings.PLATA_PRODUCT_THUMBNAIL_SIZE):
-        import os
-        import Image
-        # defining the size
-        x, y = [int(x) for x in size.split('x')]
-        # defining the filename and the miniature filename
-        filehead, filetail = os.path.split(file.path)
-        basename, format = os.path.splitext(filetail)
-        miniature = basename + '_' + size + format
-        filename = file.path
-        miniature_filename = os.path.join(filehead, miniature)
-        filehead, filetail = os.path.split(file.url)
-        miniature_url = filehead + '/' + miniature
-        if os.path.exists(miniature_filename) and os.path.getmtime(filename)>os.path.getmtime(miniature_filename):
-            os.unlink(miniature_filename)
-        # if the image wasn't already resized, resize it
-        if not os.path.exists(miniature_filename):
-            image = Image.open(filename)
-            image.thumbnail([x, y], Image.ANTIALIAS)
-            try:
-                image.save(miniature_filename, image.format)
-            except:
-                image.save(miniature_filename, image.format)
-
-        return miniature_url    
-                
-    def save(self, *args, **kwargs):
-        #print 'save image'
-        super(ProductImage, self).save(*args, **kwargs)
-        #generate thumbnail
-        self.thumbnail(self.image)
-        
-    def delete(self, *args, **kwargs):
-        #print 'delete image'
-        #self.image.delete() # doesn't work, issues a second save() which fails
-        super(ProductImage, self).delete(*args, **kwargs)
-    
-        
+     #   
+     # def thumbnail(self, file, size=plata.settings.PLATA_PRODUCT_THUMBNAIL_SIZE):
+     #     import os
+     #     import Image
+     #     # defining the size
+     #     x, y = [int(x) for x in size.split('x')]
+     #     # defining the filename and the miniature filename
+     #     filehead, filetail = os.path.split(file.path)
+     #     basename, format = os.path.splitext(filetail)
+     #     miniature = basename + '_' + size + format
+     #     filename = file.path
+     #     miniature_filename = os.path.join(filehead, miniature)
+     #     filehead, filetail = os.path.split(file.url)
+     #     miniature_url = filehead + '/' + miniature
+     #     if os.path.exists(miniature_filename) and os.path.getmtime(filename)>os.path.getmtime(miniature_filename):
+     #         os.unlink(miniature_filename)
+     #     # if the image wasn't already resized, resize it
+     #     if not os.path.exists(miniature_filename):
+     #         image = Image.open(filename)
+     #         image.thumbnail([x, y], Image.ANTIALIAS)
+     #         try:
+     #             image.save(miniature_filename, image.format)
+     #         except:
+     #             image.save(miniature_filename, image.format)
+     # 
+     #     return miniature_url    
+     #             
+     # def save(self, *args, **kwargs):
+     #     #print 'save image'
+     #     super(ProductImage, self).save(*args, **kwargs)
+     #     #generate thumbnail
+     #     self.thumbnail(self.image)
+     #     
+     # def delete(self, *args, **kwargs):
+     #     #print 'delete image'
+     #     #self.image.delete() # doesn't work, issues a second save() which fails
+     #     super(ProductImage, self).delete(*args, **kwargs)
+     # 
+     #         
