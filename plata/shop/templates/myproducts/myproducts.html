@@ -5,37 +5,109 @@
 {% block title %}{% trans "My Products" %} - {{ block.super }}{% endblock %}
 
 {% block content %}
-<h1>{% trans "My Products" %}</h1>
+<h1>{% trans "My last ordered products" %}</h1>
 
-
-{% comment %}
-<div id="sidebar_producers_titel">
-	{% trans "Producers" %}<br/>
-</div>
-<div id="sidebar_producers">
-	{% for producer in producers %}
-		<a href="{{ producer.slug }}">{{ producer }}</a><br/>
+{% if user.is_authenticated %}
+	{% comment %}
+	{% for ordereditem in ordereditems %}
+		<a href="">{{ ordereditem.sku }}</a> - 
+		<a href="">{{ ordereditem.quantity }}</a> -
+		<a href="">{{ ordereditem.orderdate }}</a><br/>
 	{% endfor %}
-</div>
-
-<div id="sidebar_categories_titel">
-	{% trans "Categories" %}<br/>
-</div>
-<div id="sidebar_categories">
-	{% for category in categories %}
-		<a href="{{ category.slug }}">{{ category }}</a><br/>
+	{% endcomment %}
+	
+	<form method="post" action=".">
+	{% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+    	<tr>
+    		<th>{% trans "Product name" %}</th>
+			<th>{% trans "Producer" %}</th>
+			<th>{% trans "Price" %}</th>
+			<th>{% trans "Quantity (total)" %}</th>
+			<th>{% trans "Reorder" %}</th>
+		</tr>
+		{% if not formset.is_bound %}
+        	{# GET request #}
+			{% for form in formset.forms %}
+				<tr>
+					{% comment %}
+					<td>{{ form.initial.sku }}{{ form.initial.name }}</td>
+					<td>{{ form.initial.producer }}</td>
+					<td>{{ form.initial.price }}</td>
+					{% endcomment%}
+					<td>{{ form.sku }}{{ form.name }}</td>
+					<td>{{ form.producer }}</td>
+					<td>{{ form.price }}</td>
+					<td>{{ form.quantity.errors }}{{ form.quantity }}</td>
+					<td>{{ form.reorder.errors }}{{ form.reorder }}</td>
+				</tr>
+			{% endfor %}
+		{% else %}
+			{# POST request #}
+			{% for form in formset.forms %}
+				<tr>
+					<td>{{ form.sku }}{{ form.name }}</td>
+					<td>{{ form.producer }}</td>
+					<td>{{ form.price }}</td>
+					{% comment %}
+					<!-- note: django will not render these fields after a post -->
+					<td>{{ form.sku.value }}{{ form.name.value }}</td>
+					<td>{{ form.producer.value }}</td>
+					<td>{{ form.price.value }}</td>
+					{% endcomment %}
+					<td>{{ form.quantity.errors }}{{ form.quantity }}</td>
+					<td>{{ form.reorder.errors }}{{ form.reorder }}</td>
+				</tr>
+			{% endfor %}
+		{% endif %}
+    </table>
+	{% for dict in formset.errors %}
+    	{% for error in dict.values %}
+        	{{ error }}
+    	{% endfor %}
 	{% endfor %}
-</div>
-
-<div id="mainpaine_producers_titel">
-	{% trans "Producers" %}<br/>
-</div>
-<div id="mainpane_producers">
-	{% for producer in producers %}
-		<a href="{{ producer.slug }}"><img src="{{ MEDIA_URL }}{{ producer.main_image }}" alt="{{ producer }}" title="{{ producer }}" /></a><br/>
-	{% endfor %}
-</div>
-{% endcomment %}
+	<input type="submit" value="{% trans "Add to cart" %}" />
+	</form>
+	
+	{% comment %}
+	<form action="." method="post">{% csrf_token %}
+	{{ form.as_p }}
+	<input type="submit" value="Submit" />
+	</form>
+	{% endcomment %}
+	
+	{% comment %}
+	<div id="sidebar_producers_titel">
+		{% trans "Producers" %}<br/>
+	</div>
+	<div id="sidebar_producers">
+		{% for producer in producers %}
+			<a href="{{ producer.slug }}">{{ producer }}</a><br/>
+		{% endfor %}
+	</div>
+	
+	<div id="sidebar_categories_titel">
+		{% trans "Categories" %}<br/>
+	</div>
+	<div id="sidebar_categories">
+		{% for category in categories %}
+			<a href="{{ category.slug }}">{{ category }}</a><br/>
+		{% endfor %}
+	</div>
+	
+	<div id="mainpaine_producers_titel">
+		{% trans "Producers" %}<br/>
+	</div>
+	<div id="mainpane_producers">
+		{% for producer in producers %}
+			<a href="{{ producer.slug }}"><img src="{{ MEDIA_URL }}{{ producer.main_image }}" alt="{{ producer }}" title="{{ producer }}" /></a><br/>
+		{% endfor %}
+	</div>
+	{% endcomment %}
+{% else %}
+	{% trans "Please" %} <a href="/login/"><span>{% trans "login" %}</span></a> {% trans " to access your order history." %}
+{% endif %}	
 
 {% include "_pagination.html" %}
 {% endblock %}

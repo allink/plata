@@ -45,7 +45,6 @@ class BillingShippingAddress(models.Model):
 
         return {'billing': billing, 'shipping': shipping}
 
-
 class Contact(BillingShippingAddress):
     user = models.OneToOneField(User, verbose_name=_('user'),
         related_name='contactuser')
@@ -62,3 +61,19 @@ class Contact(BillingShippingAddress):
 
     def __unicode__(self):
         return unicode(self.user)
+
+class OrderedItem(models.Model):
+    # mettlerd: TODO we might want to add an order number here
+    contact = models.ForeignKey(Contact, related_name='ordereditems')
+    orderdate = models.DateTimeField(_('order date'), default=datetime.now)
+    quantity = models.IntegerField(_('quantity'))
+    # we don't use a reference to Product here in order to catch both products and product variations
+    sku = models.CharField(_('SKU'), max_length=100)
+
+    class Meta:
+        verbose_name = _('ordered items')
+        verbose_name_plural = _('ordered items')
+        get_latest_by = 'orderdate'
+
+    def __unicode__(self):
+        return unicode(_("%s, on: %s, article: %s, quantity: %s") % (self.contact, self.orderdate, self.sku, self.quantity))

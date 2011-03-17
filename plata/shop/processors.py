@@ -136,7 +136,7 @@ class FixedAmountOrZeroShippingProcessor(ProcessorBase):
     def process(self, order, items):
         """
         Use this processor if you use a fixed amount for shipping costs
-        but allow for free shipping after a defined minimum amount.
+        but offer free shipping for orders >= defined minimum amount.
         """
         cost = plata.settings.PLATA_SHIPPING_FIXEDAMOUNT['cost']
         tax = plata.settings.PLATA_SHIPPING_FIXEDAMOUNT['tax']

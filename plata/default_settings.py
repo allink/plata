@@ -45,3 +45,6 @@ PLATA_DISABLE_STOCK_HANDLING = getattr(settings, 'PLATA_DISABLE_STOCK_HANDLING',
 
 # Translations
 LANGUAGES = getattr(settings, 'LANGUAGES', (('en', 'English'), ('de', 'German')))
+
+# For the personalized order history, we only display the last xy different ordered articles
+PLATA_ORDER_HISTORY_MAX_PRODUCTS = getattr(settings, 'PLATA_ORDER_HISTORY_MAX_PRODUCTS', 10)

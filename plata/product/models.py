@@ -9,6 +9,9 @@ import plata
 from plata.compat import product as itertools_product
 from plata.fields import CurrencyField
 
+import logging
+logger = logging.getLogger('plata.product')
+
 #import sys
 #import feincms
 #print "---------------------------------------------------------"
@@ -195,19 +198,24 @@ class Product(models.Model, TranslatedObjectMixin):
 
     def get_price(self, currency=None, quantity=1, **kwargs):
         # TODO Refactor. Method not optimized for performance etc. at all.
-        kwargs['currency'] = currency or plata.shop_instance().default_currency()
+        #kwargs['currency'] = currency or plata.shop_instance().default_currency()
+        currency = currency or plata.shop_instance().default_currency()
         stagger_prices = self.get_prices(**kwargs)
-        # assumption: stagger_prices is sorted in reverse numeric order
+#        print "stagger_prices: %s" % stagger_prices
+        # assumption: stagger_prices is sorted in descending order regarding my_staggered_price['stagger'] (i.e. highest stagger comes first)
         for my_currency, my_staggered_price in stagger_prices:
-            if (my_currency == currency) and (quantity >= my_staggered_price['stagger']):
-                # assume the sales price is lower than the normal price
+            # Note: conversion to int is important for a correct comparison
+            if (my_currency == currency) and (int(quantity) >= int(my_staggered_price['stagger'])):
+                # assume the sales price is lower than the normal price, so return that first
                 if my_staggered_price['sale']:
                     return my_staggered_price['sale']
                 else:
                     if my_staggered_price['normal']:
                         return my_staggered_price['normal']
                     else:
-                        raise "Strange error: Both the sales and normal price are None"
+                        logger.warn('Both the sales and normal price of product with SKU "%s and stagger %s" are None' % (self.sku, my_staggered_price['stagger']))
+        # TODO improve or delete this safety net/fallback
+        return None
 
     def get_prices(self, **kwargs):
         # TODO Refactor. Method not optimized for performance etc. at all.
@@ -223,6 +231,7 @@ class Product(models.Model, TranslatedObjectMixin):
                 # return all active prices (including stagger prices) for this product and currency
                 normal = self.prices.active().filter(currency=currency).filter(**kwargs)
             except self.prices.model.DoesNotExist:
+                # TODO correct? also: log this exception
                 continue
             
             # determine the unique stagger categories for this product on-the-fly
@@ -316,7 +325,7 @@ class Product(models.Model, TranslatedObjectMixin):
 
 
 class ProductTranslation(Translation(Product)):
-    descriptiontest = models.TextField(verbose_name=_('descriptiontest'), blank=True)
+    origdescription = models.TextField(verbose_name=_('original description'), blank=True)
     
     class Meta:
         verbose_name = _('product translation')

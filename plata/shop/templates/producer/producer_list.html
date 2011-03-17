@@ -21,7 +21,7 @@
 </div>
 <div id="sidebar_categories">
 	{% for category in categories %}
-		<a href="{{ category.slug }}">{{ category }}</a><br/>
+		<a href="{{ category.slug }}">{{ category }}</a>: {{ category.translation.teasertext }}<br/>
 	{% endfor %}
 </div>
 

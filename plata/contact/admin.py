@@ -17,3 +17,5 @@ admin.site.register(models.Contact,
         (_('Additional fields'), {'fields': ('notes',)}),
         ),
     )
+
+admin.site.register(models.OrderedItem)
