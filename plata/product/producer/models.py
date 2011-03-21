@@ -52,8 +52,6 @@ class ProducerImage(models.Model):
     def __unicode__(self):
         return self.image.name
 
-# TODO mettlerd: Shouldn't related_name rather be 'producers' for consistency?
-#Product.add_to_class('producer', models.ForeignKey(Producer, blank=True, null=True,
-#    related_name='products', verbose_name=_('producer')))
+# Note: Important: Changed related_name from "products" to "producers", for consistency.
 Product.add_to_class('producer', models.ForeignKey(Producer, blank=True, null=True,
     related_name='producers', verbose_name=_('producer')))

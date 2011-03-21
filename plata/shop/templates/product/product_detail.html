@@ -7,14 +7,6 @@
 {% block content %}
 <h1>{{ object }}</h1>
 
-{% trans "by" %}: 
-{% if object.producer %}
-	{{ object.producer}}
-{% else %}
-	({% trans "noname/unknown" %})
-{% endif%}
-<br/>
-
 {{ object.description|linebreaks }}
 
 {% if object.cmsproduct %}
@@ -22,24 +14,15 @@
 {% feincms_render_region object.cmsproduct "main" request %}
 {% endif %}
 
-{% if object.main_image %}
-<img src="{{ MEDIA_URL }}{{ object.main_image }}" title="{{ MEDIA_URL }}{{ object.main_image }}" alt="{{ MEDIA_URL }}{{ object.main_image }}" /><br/>
-<br/>
-{% endif %}
-
 <div class="prices">
-	{% for currency, staggered_price in object.get_prices %}
-	    {% if staggered_price.sale %}
-            {% if staggered_price.normal %}<span style="text-decoration: line-through;">{{ staggered_price.normal }}</span>{% endif %}
-            <strong>{{ staggered_price.sale }}</strong>
+    {% for currency, prices in object.get_prices %}
+        {% if prices.sale %}
+            {% if prices.normal %}<span style="text-decoration: line-through;">{{ prices.normal }}</span>{% endif %}
+            <strong>{{ prices.sale }}</strong><br />
         {% else %}
-            <strong>{{ staggered_price.normal }}</strong>
+            <strong>{{ prices.normal }}</strong><br />
         {% endif %}
-		{% if staggered_price.stagger > 1 %}
-			<i>({% trans "If you buy at least " %} {{ staggered_price.stagger }})</i>
-		{% endif %}
-		<br/>
-	{% endfor %}
+    {% endfor %}
 </div>
 
 <form method="post" action=".">

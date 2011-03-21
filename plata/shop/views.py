@@ -37,7 +37,6 @@ def order_confirmed(order, request, **kwargs):
             _('You have already confirmed this order earlier, but it is not fully paid for yet.'))
         return HttpResponseRedirect(reverse('plata_shop_confirmation') + '?confirmed=1')
 
-# mettlerd: TODO Modify this to remove stock handling
 def insufficient_stock(order, request, **kwargs):
     if request.method != 'GET':
         return
@@ -408,7 +407,6 @@ class Shop(object):
 
         return OrderForm
 
-    # mettlerd: TODO to remove stock handling, remove insufficient_stock check here
     @checkout_process_decorator(cart_not_empty, order_confirmed, insufficient_stock)
     def checkout(self, request, order):
         if not request.user.is_authenticated():
@@ -495,7 +493,6 @@ class Shop(object):
                 return code
         return DiscountForm
 
-    # mettlerd: TODO to remove stock handling, remove insufficient_stock check here
     @checkout_process_decorator(cart_not_empty, order_confirmed, insufficient_stock)
     def discounts(self, request, order):
         DiscountForm = self.discounts_form(request, order)
@@ -547,7 +544,6 @@ class Shop(object):
                 return data
         return ConfirmationForm
 
-    # mettlerd: TODO to remove stock handling, remove insufficient_stock check here
     @checkout_process_decorator(cart_not_empty, insufficient_stock)
     def confirmation(self, request, order):
         order.recalculate_total()

@@ -73,6 +73,15 @@ class Category(models.Model, TranslatedObjectMixin):
     @models.permalink
     def get_absolute_url(self):
         return ('plata_category_detail', (), {'object_id': self.pk})
+    
+    @property
+    def main_image(self):
+        if not hasattr(self, '_main_image'):
+            try:
+                self._main_image = self.images.all()[0]
+            except IndexError:
+                self._main_image = None
+        return self._main_image
 
 
 class CategoryTranslation(Translation(Category)):
@@ -197,16 +206,19 @@ class Product(models.Model, TranslatedObjectMixin):
         return self._main_image
 
     def get_price(self, currency=None, quantity=1, **kwargs):
+        """
+        Returns the price of this product for the according quantity and currency (or default currency), taking into account stagger prices
+        """
         # TODO Refactor. Method not optimized for performance etc. at all.
-        #kwargs['currency'] = currency or plata.shop_instance().default_currency()
+        kwargs['currency'] = currency or plata.shop_instance().default_currency()
         currency = currency or plata.shop_instance().default_currency()
+        # passing **kwargs could save us some clock cycles
         stagger_prices = self.get_prices(**kwargs)
-#        print "stagger_prices: %s" % stagger_prices
         # assumption: stagger_prices is sorted in descending order regarding my_staggered_price['stagger'] (i.e. highest stagger comes first)
         for my_currency, my_staggered_price in stagger_prices:
             # Note: conversion to int is important for a correct comparison
             if (my_currency == currency) and (int(quantity) >= int(my_staggered_price['stagger'])):
-                # assume the sales price is lower than the normal price, so return that first
+                # assumption: The sales price is lower than the normal price, so return the sales price first
                 if my_staggered_price['sale']:
                     return my_staggered_price['sale']
                 else:
@@ -214,10 +226,13 @@ class Product(models.Model, TranslatedObjectMixin):
                         return my_staggered_price['normal']
                     else:
                         logger.warn('Both the sales and normal price of product with SKU "%s and stagger %s" are None' % (self.sku, my_staggered_price['stagger']))
-        # TODO improve or delete this safety net/fallback
-        return None
+        return None # TODO improve or delete this "safety net/fallback"
 
     def get_prices(self, **kwargs):
+        """
+        Returns all prices of this product for all currencies, in descending order regarding the the stagger (i.e. highest stagger comes first)
+        Currency may optionally be limited to a single currency by passing a 'currency' parameter.
+        """
         # TODO Refactor. Method not optimized for performance etc. at all.
         # NOTE: We also handle **kwargs as we use this function in get_price(..) which allowed **kwargs
         from django.core.cache import cache
@@ -228,10 +243,10 @@ class Product(models.Model, TranslatedObjectMixin):
         prices = []
         for currency in plata.settings.CURRENCIES:
             try:
-                # return all active prices (including stagger prices) for this product and currency
+                # return all active prices (including stagger prices) for this product and either all currencies
+                # or the currency passed as **kwargs
                 normal = self.prices.active().filter(currency=currency).filter(**kwargs)
             except self.prices.model.DoesNotExist:
-                # TODO correct? also: log this exception
                 continue
             
             # determine the unique stagger categories for this product on-the-fly
@@ -239,6 +254,7 @@ class Product(models.Model, TranslatedObjectMixin):
             for temp_price in normal:
                 if not temp_price.stagger in stagger_categories:
                     stagger_categories.append(temp_price.stagger)
+            # sort stagger in descending order (important for prices to be sorted in descending stagger order too)
             stagger_categories.sort(reverse=True)
 
             # get this product's latest normal and sales price for each stagger category we found
@@ -263,10 +279,7 @@ class Product(models.Model, TranslatedObjectMixin):
         return prices
 
     def in_sale(self, currency):
-        # TODO doesn't get used anywhere
         prices = dict(self.get_prices())
-#        print "currency: %s" % currency
-#        print "prices[currency]['sale']: %s" % prices[currency]['sale']
         if currency in prices and prices[currency]['sale']:
             return True
         return False
@@ -302,26 +315,13 @@ class Product(models.Model, TranslatedObjectMixin):
 
         return items
     
-    # TODO mettlerd: return a list of unique, active producers of all active products
-    def get_producers(self, currency=None, **kwargs):
-#        kwargs['currency'] = currency or plata.shop_instance().default_currency()
-#        stagger_prices = self.get_prices(**kwargs)
-        # TODO mettlerd: add try..except
-#        active_producers = self.producers.active().filter(is_sale=False, currency=currency, stagger=current_stagger_category).filter(**kwargs).latest()
+    def get_producers(self, **kwargs):
+        """
+        Returns a list of unique, active producers of this product.
+        Note: We currently don't check whether the producer is active
+        """
         active_producers = self.producer
-#        print "self.producer: %s" % active_producers
         return active_producers
-#        # assumption: stagger_prices is sorted in reverse numeric order
-#        for my_currency, my_staggered_price in stagger_prices:
-#            if (my_currency == currency) and (quantity >= my_staggered_price['stagger']):
-#                # assume the sales price is lower than the normal price
-#                if my_staggered_price['sale']:
-#                    return my_staggered_price['sale']
-#                else:
-#                    if my_staggered_price['normal']:
-#                        return my_staggered_price['normal']
-#                    else:
-#                        raise "Strange error: Both the sales and normal price are None"
 
 
 class ProductTranslation(Translation(Product)):

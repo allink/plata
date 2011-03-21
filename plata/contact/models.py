@@ -63,11 +63,12 @@ class Contact(BillingShippingAddress):
         return unicode(self.user)
 
 class OrderedItem(models.Model):
-    # mettlerd: TODO we might want to add an order number here
+    # TODO we might want to add an order number here
     contact = models.ForeignKey(Contact, related_name='ordereditems')
     orderdate = models.DateTimeField(_('order date'), default=datetime.now)
     quantity = models.IntegerField(_('quantity'))
-    # we don't use a reference to Product here in order to catch both products and product variations
+    # Note: We don't use a reference to Product here in order to catch both products and product variations
+    # and as this model will be populated through an XML import, and hence contain outdated items.
     sku = models.CharField(_('SKU'), max_length=100)
 
     class Meta:
