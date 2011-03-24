@@ -12,8 +12,8 @@ class LazySettings(object):
         from django.conf import settings as django_settings
 
         for key in dir(default_settings):
-            if not key.startswith('PLATA_'):
-                continue
+            # if not key.startswith('PLATA_'):
+            #     continue
 
             setattr(self, key, getattr(django_settings, key,
                 getattr(default_settings, key)))
