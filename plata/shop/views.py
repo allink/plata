@@ -409,7 +409,7 @@ class Shop(object):
 
     @checkout_process_decorator(cart_not_empty, order_confirmed, insufficient_stock)
     def checkout(self, request, order):
-        if not request.user.is_authenticated():
+        if plata.settings.PLATA_AUTH_REQUIRED_TO_ORDER and not request.user.is_authenticated():
             if request.method == 'POST' and '_login' in request.POST:
                 loginform = AuthenticationForm(data=request.POST, prefix='login')
 
@@ -453,6 +453,11 @@ class Shop(object):
 
             if orderform.is_valid():
                 order = orderform.save()
+
+                if plata.settings.PLATA_SIMPLE_CHECKOUT_ENABLED:
+                    order.update_status(self.order_model.CONFIRMED, 'Confirmation given')
+                    signals.order_confirmed.send(sender=self, order=order)
+                    return plata.payment.modules.cod.PaymentProcessor(plata.shop_instance()).process_order_confirmed(request, order)
 
                 return redirect('plata_shop_discounts')
         else:
