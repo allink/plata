@@ -12,13 +12,6 @@ from plata.fields import CurrencyField
 import logging
 logger = logging.getLogger('plata.product')
 
-#import sys
-#import feincms
-#print "---------------------------------------------------------"
-#print feincms
-#print "---------------------------------------------------------"
-#print sys.path
-#print "---------------------------------------------------------"
 from feincms.translations import TranslatedObjectMixin, Translation
 
 class TaxClass(models.Model):

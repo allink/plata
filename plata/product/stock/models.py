@@ -59,10 +59,6 @@ class StockTransactionManager(models.Manager):
         return self.filter(period=Period.objects.current()).filter(self._expired())
 
     def items_in_stock(self, product, update=False, query=None):
-        # TODO FIXME As a quick fix, we simply return a big constant if stock handling is disabled
-        if plata.settings.PLATA_DISABLE_STOCK_HANDLING:
-            return sys.maxint
-                
         queryset = self.stock().filter(product=product)
         if query:
             queryset.filter(query)
