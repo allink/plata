@@ -45,8 +45,7 @@ class Category(models.Model, TranslatedObjectMixin):
     name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), unique=True)
     ordering = models.PositiveIntegerField(_('ordering'), default=0)
-    #description = models.TextField(_('description'), blank=True)
-
+    
     parent = models.ForeignKey('self', blank=True, null=True,
         limit_choices_to={'parent__isnull': True},
         related_name='children', verbose_name=_('parent'))
