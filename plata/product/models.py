@@ -45,7 +45,7 @@ class Category(models.Model, TranslatedObjectMixin):
     name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), unique=True)
     ordering = models.PositiveIntegerField(_('ordering'), default=0)
-    description = models.TextField(_('description'), blank=True)
+    #description = models.TextField(_('description'), blank=True)
 
     parent = models.ForeignKey('self', blank=True, null=True,
         limit_choices_to={'parent__isnull': True},
@@ -78,14 +78,14 @@ class Category(models.Model, TranslatedObjectMixin):
 
 
 class CategoryTranslation(Translation(Category)):
-    teasertext = models.TextField(verbose_name=_('teasertext'), blank=True)
+    description = models.TextField(_('description'), blank=True)
     
     class Meta:
         verbose_name = _('category translation')
         verbose_name_plural = _('category translations')
 
     def __unicode__(self):
-        return self.teasertext
+        return self.description
 
 
 class CategoryImage(models.Model):
