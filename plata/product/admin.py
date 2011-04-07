@@ -177,8 +177,6 @@ admin.site.register(models.Category,
     list_display=('is_active', 'is_internal', '__unicode__', 'ordering'),
     list_display_links=('__unicode__',),
     list_filter=('is_active', 'is_internal'),
-    prepopulated_fields={'slug': ('name',)},
-    search_fields=('name', 'translations__description'),
     )
 
 admin.site.register(models.OptionGroup,

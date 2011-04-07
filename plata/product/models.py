@@ -42,7 +42,6 @@ class Category(models.Model, TranslatedObjectMixin):
     is_internal = models.BooleanField(_('is internal'), default=False,
         help_text=_('Only used to internally organize products, f.e. for discounting.'))
 
-    name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), unique=True)
     ordering = models.PositiveIntegerField(_('ordering'), default=0)
     
@@ -51,7 +50,9 @@ class Category(models.Model, TranslatedObjectMixin):
         related_name='children', verbose_name=_('parent'))
 
     class Meta:
-        ordering = ['parent__ordering', 'parent__name', 'ordering', 'name']
+        # IMPORTANT: pro memoria: don't put field 'translations__name' in
+        # ordering, as this will result in duplicate category instances to be returned!
+        ordering = ['parent__ordering', 'ordering']
         verbose_name = _('category')
         verbose_name_plural = _('categories')
 
@@ -59,8 +60,8 @@ class Category(models.Model, TranslatedObjectMixin):
 
     def __unicode__(self):
         if self.parent_id:
-            return u'%s - %s' % (self.parent, self.name)
-        return self.name
+            return u'%s - %s' % (self.parent, self.translation.name)
+        return self.translation.name
 
     @models.permalink
     def get_absolute_url(self):
@@ -77,6 +78,7 @@ class Category(models.Model, TranslatedObjectMixin):
 
 
 class CategoryTranslation(Translation(Category)):
+    name = models.CharField(_('name'), max_length=100)
     description = models.TextField(_('description'), blank=True)
     
     class Meta:
@@ -84,7 +86,7 @@ class CategoryTranslation(Translation(Category)):
         verbose_name_plural = _('category translations')
 
     def __unicode__(self):
-        return self.description
+        return self.name
 
 
 class CategoryImage(models.Model):
