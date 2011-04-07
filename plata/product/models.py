@@ -175,8 +175,6 @@ class Product(models.Model):
     objects = ProductManager()
 
     def __unicode__(self):
-        # if name were in ProductTranslation, we'd use this:
-        #return "%s" % (self.translation.name)
         return self.name
 
     def save(self, *args, **kwargs):
@@ -218,7 +216,7 @@ class Product(models.Model):
                         return my_staggered_price['normal']
                     else:
                         logger.warn('Both the sales and normal price of product with SKU "%s and stagger %s" are None' % (self.sku, my_staggered_price['stagger']))
-        return None # TODO improve or delete this "safety net/fallback"
+        return None
 
     def get_prices(self, **kwargs):
         """
