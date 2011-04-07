@@ -195,6 +195,15 @@ class Product(models.Model):
                 self._main_image = None
         return self._main_image
 
+    def main_thumb(self):
+        import os
+        img = self.main_image
+        filehead, filetail = os.path.split(str(img.image.url))
+        basename, format = os.path.splitext(filetail)
+        miniature = basename + '_' + plata.settings.PLATA_PRODUCT_THUMBNAIL_SIZE + format
+        miniature_url = filehead + '/' + miniature
+        return miniature_url
+
     def get_price(self, currency=None, quantity=1, **kwargs):
         """
         Returns the price of this product for the according quantity and currency (or default currency), taking into account stagger prices
@@ -430,3 +439,36 @@ class ProductImage(models.Model):
 
     def __unicode__(self):
         return self.image.name
+
+    def thumbnail(self, file, size=plata.settings.PLATA_PRODUCT_THUMBNAIL_SIZE):
+        import os
+        import Image
+        # defining the size
+        x, y = [int(x) for x in size.split('x')]
+        # defining the filename and the miniature filename
+        filehead, filetail = os.path.split(file.path)
+        basename, format = os.path.splitext(filetail)
+        miniature = basename + '_' + size + format
+        filename = file.path
+        miniature_filename = os.path.join(filehead, miniature)
+        filehead, filetail = os.path.split(file.url)
+        miniature_url = filehead + '/' + miniature
+        if os.path.exists(miniature_filename) and os.path.getmtime(filename)>os.path.getmtime(miniature_filename):
+            os.unlink(miniature_filename)
+        # if the image wasn't already resized, resize it
+        if not os.path.exists(miniature_filename):
+            image = Image.open(filename)
+            image.thumbnail([x, y], Image.ANTIALIAS)
+            try:
+                image.save(miniature_filename, image.format)
+            except:
+                image.save(miniature_filename, image.format)
+        return miniature_url
+
+    def save(self, *args, **kwargs):
+        super(ProductImage, self).save(*args, **kwargs)
+        # generate thumbnail
+        print self.thumbnail(self.image)
+
+    def delete(self, *args, **kwargs):
+        super(ProductImage, self).delete(*args, **kwargs)
