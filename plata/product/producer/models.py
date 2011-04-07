@@ -6,17 +6,18 @@ from django.utils.translation import ugettext_lazy as _
 
 from plata.product.models import Product
 
+from feincms.translations import TranslatedObjectMixin, Translation
+
 class ProducerManager(models.Manager):
     def active(self):
         return self.filter(is_active=True)
 
 
-class Producer(models.Model):
+class Producer(models.Model, TranslatedObjectMixin):
     is_active = models.BooleanField(_('is active'), default=True)
     name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), unique=True)
     ordering = models.PositiveIntegerField(_('ordering'), default=0)
-    description = models.TextField(_('description'), blank=True)
 
     class Meta:
         app_label = 'product'
@@ -35,6 +36,17 @@ class Producer(models.Model):
             except IndexError:
                 self._main_image = None
         return self._main_image
+
+
+class ProducerTranslation(Translation(Producer)):
+    description = models.TextField(_('description'), blank=True)
+    
+    class Meta:
+        verbose_name = _('producer translation')
+        verbose_name_plural = _('producer translations')
+
+    def __unicode__(self):
+        return self.description
 
 
 class ProducerImage(models.Model):
