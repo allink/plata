@@ -151,8 +151,7 @@ class ProductManager(models.Manager):
                 ).filter(variations__orderitem__order__items__variation__product=product))
 
 
-#class Product(models.Model):
-class Product(models.Model, TranslatedObjectMixin):
+class Product(models.Model):
     is_active = models.BooleanField(_('is active'), default=True)
     is_featured = models.BooleanField(_('is featured'), default=False)
     name = models.CharField(_('name'), max_length=100)
@@ -163,7 +162,6 @@ class Product(models.Model, TranslatedObjectMixin):
     categories = models.ManyToManyField(Category,
         verbose_name=_('categories'), related_name='products',
         blank=True, null=True)
-    description = models.TextField(_('description'), blank=True)
     option_groups = models.ManyToManyField(OptionGroup, related_name='products',
         blank=True, null=True, verbose_name=_('option groups'))
 
@@ -314,17 +312,6 @@ class Product(models.Model, TranslatedObjectMixin):
         """
         active_producers = self.producer
         return active_producers
-
-
-class ProductTranslation(Translation(Product)):
-    origdescription = models.TextField(verbose_name=_('original description'), blank=True)
-    
-    class Meta:
-        verbose_name = _('product translation')
-        verbose_name_plural = _('product translations')
-
-    def __unicode__(self):
-        return self.descriptiontest
 
 
 class ProductVariation(models.Model):

@@ -9,6 +9,12 @@ from plata.product.models import Product
 from . import models
 
 
+import plata
+class CMSProductTranslationInline(admin.StackedInline):
+    model = models.CMSProductTranslation
+    max_num = len(plata.settings.LANGUAGES)
+
+
 class CMSProductForm(ProductForm):
     class Meta:
         model = models.CMSProduct
@@ -20,12 +26,13 @@ class ProductAdmin(ProductAdmin, ItemEditor):
         }),
         FEINCMS_CONTENT_FIELDSET,
         (_('Properties'), {
-            'fields': ('ordering', 'description', 'producer', 'categories',
+            'fields': ('ordering', 'producer', 'categories',
                 'option_groups', 'create_variations'),
         }),
         ]
     form = CMSProductForm
-    inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
+    inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline, CMSProductTranslationInline]
+    search_fields = ('name', 'translations__description')
 
 
 admin.site.unregister(Product)
