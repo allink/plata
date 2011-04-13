@@ -59,9 +59,13 @@ class Category(models.Model, TranslatedObjectMixin):
     objects = CategoryManager()
 
     def __unicode__(self):
+        # TODO As a qnd fix, we return the slug, so we can edit the categories,
+        # if there isn't any translated name yet (else django admin fails)
         if self.parent_id:
-            return u'%s - %s' % (self.parent, self.translation.name)
-        return self.translation.name
+#            return u'%s - %s' % (self.parent, self.translation.name)
+            return u'%s - %s' % (self.parent, self.slug)
+#        return self.translation.name
+        return self.slug
 
     @models.permalink
     def get_absolute_url(self):
