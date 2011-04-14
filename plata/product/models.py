@@ -472,7 +472,7 @@ class ProductImage(models.Model):
     def save(self, *args, **kwargs):
         super(ProductImage, self).save(*args, **kwargs)
         # generate thumbnail
-        print self.thumbnail(self.image)
+        self.thumbnail(self.image)
 
     def delete(self, *args, **kwargs):
         super(ProductImage, self).delete(*args, **kwargs)
