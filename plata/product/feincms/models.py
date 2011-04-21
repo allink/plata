@@ -15,14 +15,20 @@ class CMSProduct(Product, Base, TranslatedObjectMixin):
 
     objects = ProductManager()
 
+    def __unicode__(self):
+        return self.translation.name
 
 class CMSProductTranslation(Translation(CMSProduct)):
+    name = models.CharField(_('name'), max_length=100, blank=True) # make it blank=True
     origdescription = models.TextField(verbose_name=_('original description'), blank=True)
     description = models.TextField(_('description'), blank=True)
     
     class Meta:
+        # use parent__ordering instead of ordering
+        #ordering = ['ordering', 'name']
+        ordering = ['parent__ordering', 'name']
         verbose_name = _('CMSProduct translation')
         verbose_name_plural = _('CMSProduct translations')
 
     def __unicode__(self):
-        return self.description
+        return self.name

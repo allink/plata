@@ -160,7 +160,7 @@ class ProductManager(models.Manager):
 class Product(models.Model):
     is_active = models.BooleanField(_('is active'), default=True)
     is_featured = models.BooleanField(_('is featured'), default=False)
-    name = models.CharField(_('name'), max_length=100)
+    #name = models.CharField(_('name'), max_length=100)
     slug = models.SlugField(_('slug'), unique=True)
     ordering = models.PositiveIntegerField(_('ordering'), default=0)
     sku = models.CharField(_('SKU'), max_length=100, unique=True)
@@ -172,14 +172,17 @@ class Product(models.Model):
         blank=True, null=True, verbose_name=_('option groups'))
 
     class Meta:
-        ordering = ['ordering', 'name']
+        # Note: putting here translations__name could lead to duplicates being returned
+        #ordering = ['ordering', 'translations__name']
+        ordering = ['ordering']
         verbose_name = _('product')
         verbose_name_plural = _('products')
 
     objects = ProductManager()
 
     def __unicode__(self):
-        return self.name
+        #return self.name
+        return self.sku
 
     def save(self, *args, **kwargs):
         if not self.sku:

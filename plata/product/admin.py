@@ -122,10 +122,11 @@ class ProductAdmin(admin.ModelAdmin):
     filter_horizontal = ('categories', 'option_groups')
     form = ProductForm
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
-    list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')
-    list_display_links = ('name',)
+    #list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')
+    list_display = ('is_active', 'is_featured', 'sku', 'ordering')
+    #list_display_links = ('name',)
     list_filter = ('is_active', 'is_featured', 'categories')
-    prepopulated_fields = {'slug': ('name',), 'sku': ('name',)}
+    #prepopulated_fields = {'slug': ('name',), 'sku': ('name',)}
 
     def save_formset(self, request, form, formset, change):
         variations = isinstance(formset, ProductVariationFormSet)
@@ -202,7 +203,7 @@ admin.site.register(models.ProductPrice,
     # Make product prices writable
     #readonly_fields=('product', 'currency', '_unit_price', 'tax_included', 'tax_class',
     #    'is_active', 'valid_from', 'valid_until', 'is_sale'),
-    search_fields=('product__name', 'product__cmsproduct__translations__description', '_unit_price'),
+    search_fields=('product__cmsproduct__translations__name', 'product__cmsproduct__translations__description', '_unit_price'),
     can_delete=False,
     )
 
@@ -211,5 +212,5 @@ admin.site.register(models.ProductVariation,
     list_display=('product', 'is_active', 'sku', 'items_in_stock', 'ordering'),
     list_filter=('is_active',),
     readonly_fields=('product', 'is_active', 'sku', 'items_in_stock', 'options', 'ordering'),
-    search_fields=('product__name', 'product__cmsproduct__translations__description'),
+    search_fields=('product__cmsproduct__translations__name', 'product__cmsproduct__translations__description'),
     )

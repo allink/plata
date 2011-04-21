@@ -21,19 +21,25 @@ class CMSProductForm(ProductForm):
 
 
 class ProductAdmin(ProductAdmin, ItemEditor):
-    fieldsets = [(None, {
-        'fields': ('is_active', 'name', 'slug', 'sku', 'is_featured'),
-        }),
-        FEINCMS_CONTENT_FIELDSET,
-        (_('Properties'), {
-            'fields': ('ordering', 'producer', 'categories',
-                'option_groups', 'create_variations'),
-        }),
-        ]
+#    fieldsets = [(None, {
+#        'fields': ('is_active', 'name', 'slug', 'sku', 'is_featured'),
+#        }),
+#        FEINCMS_CONTENT_FIELDSET,
+#        (_('Properties'), {
+#            'fields': ('ordering', 'producer', 'categories',
+#                'option_groups', 'create_variations'),
+#        }),
+#        ]
     form = CMSProductForm
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline, CMSProductTranslationInline]
-    search_fields = ('name', 'translations__description')
-
+    search_fields = ('translations__name', 'translations__description')
+    #list_display = ('is_active', 'is_featured', 'translations__name', 'sku', 'ordering')
+    #list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')
+    #list_display_links = ('name',)
+    list_display = ('is_active', 'is_featured', 'sku', 'ordering')
+    list_display_links = ('sku',)
+    #list_display_links = ('translations__name',)
+    #prepopulated_fields = {'slug': ('translations__name',), 'sku': ('translations__name',)}
 
 admin.site.unregister(Product)
 admin.site.register(models.CMSProduct, ProductAdmin)
