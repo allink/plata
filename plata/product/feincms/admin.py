@@ -8,14 +8,30 @@ from plata.product.admin import ProductAdmin, ProductVariationInline,\
 from plata.product.models import Product
 from . import models
 
-
 import plata
+
+from django import forms
+
+import logging
+logger = logging.getLogger('plata_shop')
+
 class CMSProductTranslationInline(admin.StackedInline):
     model = models.CMSProductTranslation
     max_num = len(plata.settings.LANGUAGES)
 
-import logging
-logger = logging.getLogger('plata_shop')
+    # IMPORTANT: Do NOT put this import anywhere else!
+    # It needs to stay exactly here, within class scope an after the line "model = models.CMSProductTranslation"
+    from django.db import models
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'class':'mceEditorText'})},
+    }
+
+#    description = forms.CharField(widget=forms.Textarea(attrs={'class':'mceEditorText'}))
+    class Media:
+        js = ('js/jquery-1.5.1.min.js',
+              'js/tiny_mce/tiny_mce.js',
+              'js/tiny_mce_init.js',
+        )
 
 class CMSProductForm(ProductForm):
 
