@@ -122,9 +122,8 @@ class ProductAdmin(admin.ModelAdmin):
     filter_horizontal = ('categories', 'option_groups')
     form = ProductForm
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline]
-    #list_display = ('is_active', 'is_featured', 'name', 'sku', 'ordering')
+    # NOTE: we can't list the 'name' field in list_display, list_filter, prepopulated_fields anymore as it was moved to CMSProductTranslation (ambiguous ForeignKey relation)
     list_display = ('is_active', 'is_featured', 'sku', 'ordering')
-    #list_display_links = ('name',)
     list_filter = ('is_active', 'is_featured', 'categories')
     #prepopulated_fields = {'slug': ('name',), 'sku': ('name',)}
 
