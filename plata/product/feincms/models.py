@@ -20,7 +20,7 @@ class CMSProduct(Product, Base, TranslatedObjectMixin):
 
 class CMSProductTranslation(Translation(CMSProduct)):
     name = models.CharField(_('name'), max_length=100, blank=True) # make it blank=True
-    origdescription = models.TextField(verbose_name=_('original description'), blank=True)
+    short_description = models.TextField(verbose_name=_('short description'), blank=True)
     description = models.TextField(_('description'), blank=True)
     
     class Meta:
