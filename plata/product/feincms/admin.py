@@ -19,8 +19,7 @@ class CMSProductTranslationInline(admin.StackedInline):
     model = models.CMSProductTranslation
     max_num = len(plata.settings.LANGUAGES)
 
-    # IMPORTANT: Do NOT put this import anywhere else!
-    # It needs to stay exactly here, within class scope an after the line "model = models.CMSProductTranslation"
+    # IMPORTANT: Do NOT put this import anywhere else, it needs to be within class scope and right before models.Textfield!
     from django.db import models
     formfield_overrides = {
         models.TextField: {'widget': forms.Textarea(attrs={'class':'mceEditorText'})},

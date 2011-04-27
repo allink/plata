@@ -46,7 +46,7 @@ class ProducerTranslation(Translation(Producer)):
         verbose_name_plural = _('producer translations')
 
     def __unicode__(self):
-        return self.description
+        return self.parent.name
 
 
 class ProducerImage(models.Model):

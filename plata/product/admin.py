@@ -150,6 +150,18 @@ class CategoryTranslationInline(admin.StackedInline):
     model = models.CategoryTranslation
     max_num = len(plata.settings.LANGUAGES)
 
+    # IMPORTANT: Do NOT put this import anywhere else, it needs to be within class scope and right before models.Textfield!
+    from django.db import models
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'class':'mceEditorText'})},
+    }
+
+    class Media:
+        js = ('js/jquery-1.5.1.min.js',
+              'js/tiny_mce/tiny_mce.js',
+              'js/tiny_mce_init.js',
+        )
+
 #class CategoryAdmin(admin.ModelAdmin):
 #    inlines = [CategoryTranslationInline]
 #    list_display=('is_active', 'is_internal', '__unicode__', 'ordering')
