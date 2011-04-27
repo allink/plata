@@ -211,6 +211,15 @@ class Product(models.Model):
         miniature_url = filehead + '/' + miniature
         return miniature_url
 
+    def mini_thumb(self):
+        import os
+        img = self.main_image
+        filehead, filetail = os.path.split(str(img.image.url))
+        basename, format = os.path.splitext(filetail)
+        mini_miniature = basename + '_' + plata.settings.PLATA_PRODUCT_MINI_THUMBNAIL_SIZE + format
+        mini_miniature_url = filehead + '/' + mini_miniature
+        return mini_miniature_url
+
     def get_price(self, currency=None, quantity=1, **kwargs):
         """
         Returns the price of this product for the according quantity and currency (or default currency), taking into account stagger prices
@@ -476,6 +485,8 @@ class ProductImage(models.Model):
         super(ProductImage, self).save(*args, **kwargs)
         # generate thumbnail
         self.thumbnail(self.image)
+        # generate mini-thumbnail (let's re-use the thumbnail function)
+        self.thumbnail(self.image, plata.settings.PLATA_PRODUCT_MINI_THUMBNAIL_SIZE)
 
     def delete(self, *args, **kwargs):
         super(ProductImage, self).delete(*args, **kwargs)
