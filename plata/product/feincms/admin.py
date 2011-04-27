@@ -26,7 +26,6 @@ class CMSProductTranslationInline(admin.StackedInline):
         models.TextField: {'widget': forms.Textarea(attrs={'class':'mceEditorText'})},
     }
 
-#    description = forms.CharField(widget=forms.Textarea(attrs={'class':'mceEditorText'}))
     class Media:
         js = ('js/jquery-1.5.1.min.js',
               'js/tiny_mce/tiny_mce.js',
