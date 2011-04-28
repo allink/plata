@@ -490,3 +490,4 @@ class ProductImage(models.Model):
 
     def delete(self, *args, **kwargs):
         super(ProductImage, self).delete(*args, **kwargs)
+        # NOTE: We don't delete thumbnail and mini thumbnail files yet (doesn't matter though, we always overwrite them)

@@ -18,7 +18,6 @@ from django.utils.translation import ugettext as _, ungettext
 import plata
 from plata.shop import signals
 
-
 logger = logging.getLogger('plata.shop.views')
 
 
@@ -272,6 +271,11 @@ class Shop(object):
 
     @checkout_process_decorator(order_confirmed)
     def cart(self, request, order):
+        # if the user isn't logged in, redirect her/him to the login page (we use this, as the @login_required decorator doesn't work here)
+        if request.user:
+            if not request.user.is_authenticated():
+                return HttpResponseRedirect(reverse('plata_shop.views.login'))
+
         if not order or not order.items.count():
             return self.render_cart_empty(request, {})
 
