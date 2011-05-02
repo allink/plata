@@ -49,6 +49,7 @@ class Contact(BillingShippingAddress):
     user = models.OneToOneField(User, verbose_name=_('user'),
         related_name='contactuser')
 
+    customer_no = models.CharField(_('customer number'), max_length=50, blank=True)
     dob = models.DateField(_('date of birth'), blank=True, null=True)
     created = models.DateTimeField(_('created'), default=datetime.now)
 
