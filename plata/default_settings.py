@@ -41,8 +41,10 @@ PLATA_SHIPPING_INFO = getattr(settings, 'PLATA_SHIPPING_INFO', PLATA_ORDER_BCC)
 
 CURRENCIES = getattr(settings, 'CURRENCIES', ('CHF', 'EUR', 'USD'))
 
-# Translations
+# Translations for the whole system including the backend
 LANGUAGES = getattr(settings, 'LANGUAGES', (('en', 'English'), ('de', 'German')))
+# Translations available to visitors of the store (i.e. the store front)
+STORE_FRONT_LANGUAGES = getattr(settings, 'STORE_FRONT_LANGUAGES', (('en', 'English'), ('de', 'German')))
 
 # For the personalized order history, we only display the last xy different ordered articles
 PLATA_ORDER_HISTORY_MAX_PRODUCTS = getattr(settings, 'PLATA_ORDER_HISTORY_MAX_PRODUCTS', 10)
