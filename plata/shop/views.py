@@ -311,6 +311,16 @@ class Shop(object):
                     messages.success(request, _('The cart has been updated.'))
 
                 if 'checkout' in request.POST:
+                    if plata.settings.PLATA_SIMPLEST_CHECKOUT_ENABLED: # If we don't want customers to enter billing/shipping addresses
+                        # Mark order as completed
+                        order.update_status(self.order_model.COMPLETED, 'Order has been completed')
+                        signals.order_completed.send(sender=self, order=order)
+                        # Mark order as paid
+                        order.paid = order.total
+                        order.save()
+                        #contact = self.contact_from_user(request.user)
+                        #logger.debug("Order %s placed by contact : %s" % (order, contact))
+                        return redirect('plata_order_success') # not required, strictly speaking, thanks to the @order_confirmed decorator
                     return redirect('plata_shop_checkout')
                 return HttpResponseRedirect('.')
         else:
