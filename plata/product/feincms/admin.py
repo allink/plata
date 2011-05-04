@@ -57,8 +57,8 @@ class CMSProductAdmin(ProductAdmin, ItemEditor):
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline, CMSProductTranslationInline]
     search_fields = ('translations__name', 'translations__description')
     # NOTE: we can't use 'name' (doesn't exist anymore) or 'translations__name' (ambiguous ForeignKey relation) here
-    list_display = ('is_active', 'is_featured', 'sku', 'ordering')
-    list_display_links = ('sku',)
+    list_display = ('is_active', 'is_featured','__unicode__' , 'sku', 'ordering')
+    list_display_links = ('__unicode__',)
     # NOTE: prepopulated_fields doesn't accept ForeignKey fields (ambiguous), we thus can't prepopulate the slug and sku for new products.
     #prepopulated_fields = {'slug': ('translations__name',), 'sku': ('translations__name',)}
 

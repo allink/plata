@@ -12,6 +12,7 @@ class CMSProduct(Product, Base, TranslatedObjectMixin):
         app_label = 'product'
         verbose_name = _('product')
         verbose_name_plural = _('products')
+        proxy = True
 
     objects = ProductManager()
 
