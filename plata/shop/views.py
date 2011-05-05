@@ -593,14 +593,17 @@ class Shop(object):
             self.get_context(request, context))
 
     def order_success(self, request):
-        order = self.order_from_request(request)
+        order_done = self.order_from_request(request)
 
-        if not order:
+        if not order_done:
             return self.order_new(request)
+
+        # Let's explicitly create a new, empty order. We still display the order_done though.
+        self.set_order_on_request(request, order=None)
 
         return render_to_response('plata/shop_order_success.html',
             self.get_context(request, {
-                'order': order,
+                'order': order_done,
                 }))
 
     def order_payment_failure(self, request):
