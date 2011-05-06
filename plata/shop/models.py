@@ -108,7 +108,8 @@ class Order(BillingShippingAddress):
 
     @property
     def shipping(self):
-        if plata.settings.PLATA_PRICE_INCLUDES_TAX:
+        # TODO/FIXME For now, we simply ignore PLATA_PRICE_INCLUDES_TAX for the shipping calculation
+        if True or plata.settings.PLATA_PRICE_INCLUDES_TAX:
             if self.shipping_cost is None:
                 return None
 
