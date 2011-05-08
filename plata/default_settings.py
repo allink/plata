@@ -37,6 +37,8 @@ PLATA_ALWAYS_BCC = getattr(settings, 'PLATA_ALWAYS_BCC',
 PLATA_ORDER_BCC = getattr(settings, 'PLATA_ORDER_BCC',
     [email for name, email in settings.MANAGERS])
 PLATA_EMAIL_SENDER_ADDRESS = getattr(settings, 'PLATA_EMAIL_SENDER_ADDRESS', '')
+PLATA_NEW_REGISTRATION_ADMIN = getattr(settings, 'PLATA_NEW_REGISTRATION_ADMIN',
+    [email for name, email in settings.ADMINS])
 # TODO rework this into a more generic notification configuration
 PLATA_SHIPPING_INFO = getattr(settings, 'PLATA_SHIPPING_INFO', PLATA_ORDER_BCC)
 
