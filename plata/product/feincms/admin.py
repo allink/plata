@@ -55,7 +55,7 @@ class CMSProductAdmin(ProductAdmin, ItemEditor):
 
     form = CMSProductForm
     inlines = [ProductVariationInline, ProductPriceInline, ProductImageInline, CMSProductTranslationInline]
-    search_fields = ('translations__name', 'translations__description')
+    search_fields = ('translations__name', 'translations__description', 'translations__short_description', 'sku', 'slug')
     # NOTE: we can't use 'name' (doesn't exist anymore) or 'translations__name' (ambiguous ForeignKey relation) here
     list_display = ('is_active', 'is_featured','__unicode__' , 'sku', 'ordering')
     list_display_links = ('__unicode__',)
