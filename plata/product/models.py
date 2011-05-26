@@ -250,10 +250,12 @@ class Product(models.Model):
         """
         # TODO Refactor. Method not optimized for performance etc. at all.
         # NOTE: We also handle **kwargs as we use this function in get_price(..) which allowed **kwargs
-        from django.core.cache import cache
-        key = 'product-prices-%s' % self.pk
-        if cache.has_key(key):
-            return cache.get(key)
+        CACHING = False # disable caching of prices for now, so we can live-update product prices
+        if CACHING:
+            from django.core.cache import cache
+            key = 'product-prices-%s' % self.pk
+            if cache.has_key(key):
+                return cache.get(key)
 
         prices = []
         for currency in plata.settings.CURRENCIES:
@@ -289,8 +291,8 @@ class Product(models.Model):
                     'sale': sales_price,
                     'stagger': current_stagger_category,
                     }))
-
-        cache.set(key, prices)
+        if CACHING:
+            cache.set(key, prices)
         return prices
 
     def in_sale(self, currency):
