@@ -37,6 +37,7 @@ PLATA_ALWAYS_BCC = getattr(settings, 'PLATA_ALWAYS_BCC',
 PLATA_ORDER_BCC = getattr(settings, 'PLATA_ORDER_BCC',
     [email for name, email in settings.MANAGERS])
 PLATA_EMAIL_SENDER_ADDRESS = getattr(settings, 'PLATA_EMAIL_SENDER_ADDRESS', '')
+PLATA_EMAIL_ATTACH_PDFS = getattr(settings, 'PLATA_EMAIL_ATTACH_PDFS', True)
 PLATA_NEW_REGISTRATION_ADMIN = getattr(settings, 'PLATA_NEW_REGISTRATION_ADMIN',
     [email for name, email in settings.ADMINS])
 # TODO rework this into a more generic notification configuration
@@ -48,6 +49,7 @@ CURRENCIES = getattr(settings, 'CURRENCIES', ('CHF', 'EUR', 'USD'))
 LANGUAGES = getattr(settings, 'LANGUAGES', (('en', 'English'), ('de', 'German')))
 # Translations available to visitors of the store (i.e. the store front)
 STORE_FRONT_LANGUAGES = getattr(settings, 'STORE_FRONT_LANGUAGES', (('en', 'English'), ('de', 'German')))
+STORE_FRONT_THEME = getattr(settings, 'STORE_FRONT_THEME', '')
 
 # For the personalized order history, we only display the last xy different ordered articles
 PLATA_ORDER_HISTORY_MAX_PRODUCTS = getattr(settings, 'PLATA_ORDER_HISTORY_MAX_PRODUCTS', 10)
