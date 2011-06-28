@@ -199,7 +199,9 @@ class Shop(object):
 
     def order_modify_item_form(self, request, product):
         class Form(forms.Form):
-            quantity = forms.IntegerField(label=_('quantity'), initial=1)
+            # remove label as we use normal html to render a "label" already
+            #quantity = forms.IntegerField(label=_('quantity'), initial=1)
+            quantity = forms.IntegerField(label="", initial=1)
 
             def __init__(self, *args, **kwargs):
                 self.order = kwargs.pop('order', None)
